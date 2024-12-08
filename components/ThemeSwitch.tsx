@@ -1,13 +1,24 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { themeChange } from 'theme-change';
 
 function ThemeSwitch() {
-  const [isDark, setIsDark] = useState(
-    JSON.parse(localStorage.getItem('isDark') || 'false') as boolean
-  );
+  const [isDark, setIsDark] = useState(false);
+
   useEffect(() => {
-    localStorage.setItem('isDark', JSON.stringify(isDark));
-  }, [isDark]);
+    if (typeof window !== 'undefined') {
+      const checkDarkTheme = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches;
+      setIsDark(checkDarkTheme);
+    }
+    themeChange(false);
+  }, []);
+
+  const switchTheme = () => {
+    setIsDark((prev) => !prev);
+  };
+
   return (
     <label className="flex cursor-pointer gap-2">
       <svg
@@ -26,10 +37,11 @@ function ThemeSwitch() {
       </svg>
       <input
         type="checkbox"
-        value="dark"
         checked={isDark}
-        className="toggle theme-controller"
-        onChange={() => setIsDark(!isDark)}
+        onChange={switchTheme}
+        className="toggle"
+        data-toggle-theme={isDark ? 'light,dark' : 'dark,light'}
+        data-act-class="ACTIVECLASS"
       />
       <svg
         xmlns="http://www.w3.org/2000/svg"
