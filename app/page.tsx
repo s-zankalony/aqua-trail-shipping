@@ -1,9 +1,11 @@
-import Image from 'next/image';
+import Hero from '@/components/Hero';
+import ServicesBrief from '@/components/ServicesBrief';
 
 export default function Home() {
   return (
-    <div className="h-screen flex items-center justify-center">
-      <h1 className="text-3xl font-bold">Home Page</h1>
-    </div>
+    <>
+      <Hero />
+      <ServicesBrief />
+    </>
   );
 }

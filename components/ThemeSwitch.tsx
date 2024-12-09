@@ -40,7 +40,7 @@ function ThemeSwitch() {
         checked={isDark}
         onChange={switchTheme}
         className="toggle"
-        data-toggle-theme={isDark ? 'light,dark' : 'dark,light'}
+        data-toggle-theme="dark,light"
         data-act-class="ACTIVECLASS"
       />
       <svg

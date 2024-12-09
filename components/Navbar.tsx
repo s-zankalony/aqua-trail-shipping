@@ -28,9 +28,9 @@ function Navbar() {
           <Image
             src={logo}
             alt="logo"
-            width={35}
-            height={35}
-            className="rounded-full bg-cover"
+            width={48}
+            height={48}
+            className="rounded-full"
           />
           <a className="btn btn-ghost text-xl">Aqua Trail Company</a>
         </div>
