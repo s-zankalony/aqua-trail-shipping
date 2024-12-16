@@ -3,10 +3,10 @@ function Footer() {
     <footer className="footer bg-neutral text-neutral-content grid-rows-2 p-10">
       <nav>
         <h6 className="footer-title">Services</h6>
-        <a className="link link-hover">Branding</a>
-        <a className="link link-hover">Design</a>
-        <a className="link link-hover">Marketing</a>
-        <a className="link link-hover">Advertisement</a>
+        <a className="link link-hover">Sea Freight</a>
+        <a className="link link-hover">Road Transport</a>
+        <a className="link link-hover">Air Freight</a>
+        <a className="link link-hover">Warehousing</a>
       </nav>
       <nav>
         <h6 className="footer-title">Company</h6>
@@ -26,7 +26,6 @@ function Footer() {
         <a className="link link-hover">Twitter</a>
         <a className="link link-hover">Instagram</a>
         <a className="link link-hover">Facebook</a>
-        <a className="link link-hover">GitHub</a>
       </nav>
       <nav>
         <h6 className="footer-title">Explore</h6>

@@ -8,7 +8,7 @@ function StatsComponent() {
     triggerOnce: true,
   });
   return (
-    <div className="stats stats-vertical lg:stats-horizontal shadow">
+    <div className="stats stats-vertical m-auto lg:stats-horizontal shadow">
       <div className="stat">
         <div className="stat-title">Users</div>
         <div className="stat-value">
