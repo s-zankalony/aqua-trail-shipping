@@ -4,4 +4,5 @@ export type ServiceCardType = {
   title: string;
   desc: string;
   btnText: string;
+  page: string;
 };

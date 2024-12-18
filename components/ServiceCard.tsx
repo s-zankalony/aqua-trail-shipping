@@ -1,7 +1,8 @@
+import Link from 'next/link';
 import { ServiceCardType } from '../utils/types';
 
 function ServiceCard({ service }: { service: ServiceCardType }) {
-  const { id, title, img, desc, btnText } = service;
+  const { id, title, img, desc, btnText, page } = service;
   return (
     <div className="card bg-base-100 w-96 shadow-xl p-4">
       <figure>
@@ -11,7 +12,9 @@ function ServiceCard({ service }: { service: ServiceCardType }) {
         <h2 className="card-title">{title}</h2>
         <p>{desc}</p>
         <div className="card-actions justify-end">
-          <button className="btn btn-primary">{btnText}</button>
+          <Link className="btn btn-primary" href={`/services#${page}`}>
+            {btnText}
+          </Link>
         </div>
       </div>
     </div>

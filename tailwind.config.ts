@@ -12,6 +12,9 @@ export default {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
       },
+      scrollBehavior: {
+        smooth: 'smooth',
+      },
     },
   },
   plugins: [require('@tailwindcss/typography'), require('daisyui')],

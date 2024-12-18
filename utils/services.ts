@@ -7,6 +7,7 @@ export const services = [
     title: 'Sea Freight',
     desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus ipsum ipsa, non laborum tempora error? Rem similique incidunt enim quod.',
     btnText: 'Learn more',
+    page: 'seafreight',
   },
   {
     id: nanoid(),
@@ -14,6 +15,7 @@ export const services = [
     title: 'Road Transport',
     desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio ab distinctio, voluptatum qui cum labore? Molestiae officiis excepturi ducimus ut?',
     btnText: 'Learn more',
+    page: 'roadtransport',
   },
   {
     id: nanoid(),
@@ -21,6 +23,7 @@ export const services = [
     title: 'Air Freight',
     desc: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Enim quod incidunt aliquam ea magni quasi non, repellendus praesentium provident ullam!',
     btnText: 'Learn more',
+    page: 'airfreight',
   },
   {
     id: nanoid(),
@@ -28,5 +31,6 @@ export const services = [
     title: 'Warehousing',
     desc: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vel, placeat sint hic at quis magnam quae veritatis molestiae earum commodi.',
     btnText: 'Learn more',
+    page: 'warehousing',
   },
 ];
