@@ -18,7 +18,7 @@ function ServiceCardHorizontal({ service }: { service: ServiceCardType }) {
         <p>{extendedDesc}</p>
         <div className="card-actions justify-end">
           <button className="btn btn-primary">
-            <Link href={`/${page}`}>{btnText}</Link>
+            <Link href={`/services/${page}`}>{btnText}</Link>
           </button>
         </div>
       </div>
