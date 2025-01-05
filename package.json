@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^6.1.0",
     "@tailwindcss/typography": "^0.5.15",
     "nanoid": "^5.0.9",
     "next": "15.0.3",

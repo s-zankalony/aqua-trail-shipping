@@ -32,20 +32,23 @@ enum ContainerSize {
 }
 
 enum containerType {
-  DRY
-  REEFER
-  OPEN_TOP
-  FLAT_RACK
-  TANK
-  ISO_TANK
-  HIGH_CUBE
-  OPEN_SIDE
-  DOUBLE_DOOR
+  DRY      @map("DC")
+  REEFER  @map("RF")
+  REEFER_HIGH_CUBE @map("RH")
+  OPEN_TOP  @map("OT")
+  OPEN_TOP_HIGH_CUBE @map("OH")
+  FLAT_RACK @map("FR")
+  FLAT_RACK_HIGH_CUBE @map("FH")
+  TANK    @map("TK")
+  ISO_TANK  @map("ITk")
+  HIGH_CUBE @map("HC")
+  OPEN_SIDE @map("Open Side")
+  DOUBLE_DOOR @map("Double Door")
   BULK
   VENTILATED
-  INSULATED
+  INSULATED @map("IN")
   HANGING
-  PLATFORM
+  PLATFORM  @map("PL")
   OTHER
 }
 
@@ -57,6 +60,7 @@ model SeaFreightBooking {
   containerSize ContainerSize
   containerQuantity Int
   commodity String
+  weight Float
   dg Boolean
   dgData DgData[]
   reefer Boolean

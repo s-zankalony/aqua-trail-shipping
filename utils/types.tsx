@@ -3,6 +3,5 @@ export type ServiceCardType = {
   img: string;
   title: string;
   desc: string;
-  btnText: string;
   page: string;
 };

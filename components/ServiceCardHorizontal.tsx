@@ -1,8 +1,9 @@
 import { ServiceCardType } from '@/utils/types';
 import Link from 'next/link';
+import LinkButton from './LinkButton';
 
 function ServiceCardHorizontal({ service }: { service: ServiceCardType }) {
-  const { id, title, btnText, desc, img, page } = service;
+  const { id, title, desc, img, page } = service;
   const extendedDesc = `${desc} 
 
   Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta earum dolores dolore ex fugiat repudiandae optio veritatis at ullam cumque provident non, neque beatae ad veniam debitis ut molestiae autem harum. Tempora nemo omnis similique impedit nihil officia rerum provident?
@@ -17,9 +18,8 @@ function ServiceCardHorizontal({ service }: { service: ServiceCardType }) {
         <h2 className="card-title">{title}</h2>
         <p>{extendedDesc}</p>
         <div className="card-actions justify-end">
-          <button className="btn btn-primary">
-            <Link href={`/services/${page}`}>{btnText}</Link>
-          </button>
+          <LinkButton reference={`booking/${page}`} text="Book Now!" />
+          <LinkButton reference={`services/${page}`} text="More Details" />
         </div>
       </div>
     </div>

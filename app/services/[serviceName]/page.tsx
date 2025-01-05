@@ -1,5 +1,6 @@
 import { services } from '@/utils/services';
 import { notFound } from 'next/navigation';
+import LinkButton from '@/components/LinkButton';
 
 type Props = {
   params: {
@@ -13,6 +14,11 @@ async function ServicePage({ params }: Props) {
   if (!service) {
     notFound();
   }
+
+  const handleBooking = () => {
+    window.location.href = `/booking/${service.page}`;
+  };
+
   return (
     <div className="flex flex-col gap-4 bg-base-100 p-8 m-16 items-center">
       <figure>
@@ -38,7 +44,7 @@ async function ServicePage({ params }: Props) {
           dolores..
         </p>
         <div className="card-actions justify-end mt-8">
-          <button className="btn btn-primary">Book now</button>
+          <LinkButton text="Book Now!" reference={`booking/${service.page}`} />
         </div>
       </div>
     </div>
