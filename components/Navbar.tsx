@@ -32,7 +32,9 @@ function Navbar() {
             height={48}
             className="rounded-full"
           />
-          <a className="btn btn-ghost text-xl">Aqua Trail Company</a>
+          <a className="btn btn-ghost text-xl" href="/">
+            Aqua Trail Company
+          </a>
         </div>
       </div>
       <div className="flex-none gap-2">

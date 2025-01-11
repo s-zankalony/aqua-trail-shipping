@@ -19,6 +19,7 @@ model Customer {
   email     String
   phone     String
   address   String
+  city      String  // Add this line
   country   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

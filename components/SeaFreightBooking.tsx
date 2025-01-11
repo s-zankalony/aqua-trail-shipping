@@ -1,9 +1,35 @@
 'use client';
-import { useState, FormEvent, ChangeEvent } from 'react';
+import { fetchAllCustomers, findCustomers } from '@/utils/actions';
+import { GetServerSideProps } from 'next';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 
 function SeaFreightBooking() {
+  const [search, setSearch] = useState('');
+  const [allCustomers, setAllCustomers] = useState<
+    { id: number; name: string }[]
+  >([]);
+
+  const [filteredCustomers, setFilteredCustomers] = useState<
+    { id: number; name: string }[]
+  >([]);
+
+  const loadCustomers = async () => {
+    let customers = await fetchAllCustomers();
+    const mappedCustomers = customers.map((customer) => ({
+      id: parseInt(customer.id),
+      name: customer.name,
+    }));
+    setAllCustomers(mappedCustomers);
+  };
+
+  useEffect(() => {
+    loadCustomers();
+  }, [search]);
+
   const [formData, setFormData] = useState({
-    customerId: '',
+    customerName: [''],
     containerType: '',
     containerSize: '',
     containerQuantity: 0,
@@ -47,15 +73,45 @@ function SeaFreightBooking() {
     <div className="max-w-lg mx-auto p-4 bg-white shadow-md rounded">
       <h1 className="text-3xl mb-4">SeaFreightBooking</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          name="customerId"
-          value={formData.customerId}
-          onChange={handleChange}
-          placeholder="Customer ID"
-          required
-          className="w-full p-2 border border-gray-300 rounded"
-        />
+        <label className="block">
+          <span>Customer Name</span>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              const results = allCustomers.filter((c) =>
+                c.name.toLowerCase().includes(e.target.value.toLowerCase())
+              );
+              setFilteredCustomers(results);
+            }}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+          <ul className="bg-white border rounded mt-1">
+            {filteredCustomers.length ? (
+              filteredCustomers.map((c) => (
+                <li
+                  key={c.id}
+                  onClick={() => {
+                    setFormData({ ...formData, customerName: [c.name] });
+                    setSearch(c.name);
+                    setFilteredCustomers([]);
+                  }}
+                  className="p-1 cursor-pointer hover:bg-gray-100"
+                >
+                  {c.name}
+                </li>
+              ))
+            ) : (
+              <li
+                className="p-1 cursor-pointer hover:bg-gray-100"
+                onClick={() => redirect('/customer/create')}
+              >
+                Create Customer
+              </li>
+            )}
+          </ul>
+        </label>
         <select
           name="containerType"
           value={formData.containerType}

@@ -3,9 +3,10 @@ import SeaFreightBooking from '@/components/SeaFreightBooking';
 import RoadTransportBooking from '@/components/RoadTransportBooking';
 import WarehousingBooking from '@/components/WarehousingBooking';
 
-function BookingPage({ params }: { params: { service: string } }) {
+async function BookingPage({ params }: { params: { service: string } }) {
+  const service = await params.service;
   const renderBookingComponent = () => {
-    switch (params.service) {
+    switch (service) {
       case 'airfreight':
         return <AirFreightBooking />;
       case 'seafreight':
