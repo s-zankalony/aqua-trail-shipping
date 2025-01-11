@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aqua Trail Shipping Management System
+
+A modern shipping management platform built with Next.js, designed to streamline maritime logistics and cargo tracking operations.
+
+## Features
+
+- Shipment bookings
+- Customer registration
+- Documentation handling
+- Route optimization
+- Reporting and analytics
+- User role management
+
+## Technology Stack
+
+- **Frontend**: Next.js 14
+- **Styling**: Tailwind CSS
+- **Authentication**: NextAuth.js
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **API**: REST & tRPC
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
+
+```bash
+git clone https://github.com/s-zankalony/aqua-trail-shipping.git
+cd aqua-trail-shipping
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up environment variables:
+
+```bash
+cp .env.example .env
+```
+
+4. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) to access the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Ensure you have the following environment variables configured:
 
-## Learn More
+- `DATABASE_URL`: PostgreSQL connection string
+- `NEXTAUTH_SECRET`: Authentication secret key
+- `NEXTAUTH_URL`: Your application URL
 
-To learn more about Next.js, take a look at the following resources:
+## Documentation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Detailed documentation for each feature can be found in the `/docs` directory:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [API Documentation](docs/api.md)
+- [Database Schema](docs/schema.md)
+- [Deployment Guide](docs/deployment.md)
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support and queries, please open an issue in the GitHub repository or contact the maintenance team.
