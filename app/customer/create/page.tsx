@@ -2,7 +2,6 @@
 import Toast from '@/components/Toast';
 import { createCustomer } from '@/utils/actions';
 import { useState } from 'react';
-import { text } from 'stream/consumers';
 
 function CreateCustomerPage() {
   const [toast, setToast] = useState({
@@ -32,7 +31,7 @@ function CreateCustomerPage() {
     } catch (error) {
       console.log(error);
       setToast({
-        text: 'Customer already exists',
+        text: error as string,
         type: 'alert-error',
         status: 'block',
       });

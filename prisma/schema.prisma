@@ -27,7 +27,7 @@ model Customer {
   SeaFreightBooking SeaFreightBooking[]
 }
 
-enum ContainerSize {
+enum containerSize {
   TWENTY_FT  @map("20ft")
   FORTY_FT   @map("40ft")
 }
@@ -55,10 +55,10 @@ enum containerType {
 
 model SeaFreightBooking {
   id        String   @id @default(uuid()) @map("_id")
-  customer  Customer @relation(fields: [customerId], references: [id])
+  shipper  Customer @relation(fields: [customerId], references: [id])
   customerId String
   containerType containerType
-  containerSize ContainerSize
+  containerSize containerSize
   containerQuantity Int
   commodity String
   weight Float

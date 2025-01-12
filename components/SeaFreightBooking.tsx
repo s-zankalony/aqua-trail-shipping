@@ -1,35 +1,44 @@
 'use client';
-import { fetchAllCustomers, findCustomers } from '@/utils/actions';
-import { GetServerSideProps } from 'next';
-import Link from 'next/link';
+import { findCustomers, createSeafreightBooking } from '@/utils/actions';
+import { BookingData } from '@/utils/types';
 import { redirect } from 'next/navigation';
 import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
+import Toast from './Toast';
 
 function SeaFreightBooking() {
+  const [toast, setToast] = useState({
+    text: '',
+    type: '',
+    status: 'hidden',
+  });
   const [search, setSearch] = useState('');
-  const [allCustomers, setAllCustomers] = useState<
-    { id: number; name: string }[]
-  >([]);
 
   const [filteredCustomers, setFilteredCustomers] = useState<
-    { id: number; name: string }[]
+    {
+      name: string;
+      email: string;
+      id: string;
+      phone: string;
+      address: string;
+      city: string;
+      country: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }[]
   >([]);
 
-  const loadCustomers = async () => {
-    let customers = await fetchAllCustomers();
-    const mappedCustomers = customers.map((customer) => ({
-      id: parseInt(customer.id),
-      name: customer.name,
-    }));
-    setAllCustomers(mappedCustomers);
+  const searchResults = async (search: string) => {
+    const results = await findCustomers(search);
+    setFilteredCustomers(Array.isArray(results) ? results : []);
   };
 
   useEffect(() => {
-    loadCustomers();
+    searchResults(search);
   }, [search]);
 
-  const [formData, setFormData] = useState({
-    customerName: [''],
+  const [formData, setFormData] = useState<BookingData>({
+    customerId: '',
+    customerName: '',
     containerType: '',
     containerSize: '',
     containerQuantity: 0,
@@ -42,7 +51,7 @@ function SeaFreightBooking() {
     destination: '',
     pol: '',
     pod: '',
-    etd: '',
+    etd: new Date(),
   });
 
   const handleChange = (
@@ -55,6 +64,16 @@ function SeaFreightBooking() {
         ...formData,
         [name]: checked,
       });
+    } else if (type === 'datetime-local') {
+      setFormData({
+        ...formData,
+        [name]: new Date(value),
+      });
+    } else if (type === 'number') {
+      setFormData({
+        ...formData,
+        [name]: parseInt(value),
+      });
     } else {
       setFormData({
         ...formData,
@@ -63,210 +82,293 @@ function SeaFreightBooking() {
     }
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission
     console.log(formData);
+    try {
+      await createSeafreightBooking({ bookingData: formData });
+      setToast({
+        text: 'Booking created successfully',
+        type: 'success',
+        status: 'block',
+      });
+    } catch (error) {
+      setToast({
+        type: 'error',
+        status: 'block',
+        text: error as string,
+      });
+    }
   };
 
   return (
-    <div className="max-w-lg mx-auto p-4 bg-white shadow-md rounded">
-      <h1 className="text-3xl mb-4">SeaFreightBooking</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <label className="block">
-          <span>Customer Name</span>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              const results = allCustomers.filter((c) =>
-                c.name.toLowerCase().includes(e.target.value.toLowerCase())
-              );
-              setFilteredCustomers(results);
-            }}
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-          <ul className="bg-white border rounded mt-1">
-            {filteredCustomers.length ? (
-              filteredCustomers.map((c) => (
-                <li
-                  key={c.id}
-                  onClick={() => {
-                    setFormData({ ...formData, customerName: [c.name] });
-                    setSearch(c.name);
-                    setFilteredCustomers([]);
-                  }}
-                  className="p-1 cursor-pointer hover:bg-gray-100"
-                >
-                  {c.name}
-                </li>
-              ))
-            ) : (
-              <li
-                className="p-1 cursor-pointer hover:bg-gray-100"
-                onClick={() => redirect('/customer/create')}
-              >
-                Create Customer
-              </li>
+    <div className="card w-full max-w-2xl mx-auto bg-base-100 shadow-xl">
+      <div className="card-body">
+        <h1 className="card-title text-3xl mb-6">Sea Freight Booking</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Shipper Name</span>
+            </label>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              className="input input-bordered w-full"
+            />
+            {(filteredCustomers.length > 0 || search) && (
+              <ul className="menu bg-base-200 rounded-box mt-1">
+                {filteredCustomers.length ? (
+                  filteredCustomers.map((c) => (
+                    <li key={c.id}>
+                      <a
+                        onClick={() => {
+                          setFormData({
+                            ...formData,
+                            customerId: c.id,
+                            customerName: c.name,
+                          });
+                          setSearch(c.name);
+                          setFilteredCustomers([]);
+                        }}
+                      >
+                        <p>{c.name}</p>
+                        <p>{c.address}</p>
+                        <p>{c.city}</p>
+                        <p>{c.country}</p>
+                      </a>
+                    </li>
+                  ))
+                ) : (
+                  <li>
+                    <a onClick={() => redirect('/customer/create')}>
+                      Create Customer
+                    </a>
+                  </li>
+                )}
+              </ul>
             )}
-          </ul>
-        </label>
-        <select
-          name="containerType"
-          value={formData.containerType}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border border-gray-300 rounded"
-        >
-          <option value="">Select Container Type</option>
-          <option value="DC">Dry</option>
-          <option value="RF">Reefer</option>
-          <option value="RH">Reefer High Cube</option>
-          <option value="OT">Open Top</option>
-          <option value="OH">Open Top High Cube</option>
-          <option value="FR">Flat Rack</option>
-          <option value="FH">Flat Rack High Cube</option>
-          <option value="TK">Tank</option>
-          <option value="ITk">ISO Tank</option>
-          <option value="HC">High Cube</option>
-          <option value="Open Side">Open Side</option>
-          <option value="Double Door">Double Door</option>
-          <option value="Bulk">Bulk</option>
-          <option value="Ventilated">Ventilated</option>
-          <option value="IN">Insulated</option>
-          <option value="Hanging">Hanging</option>
-          <option value="PL">Platform</option>
-          <option value="Other">Other</option>
-        </select>
-        <select
-          name="containerSize"
-          value={formData.containerSize}
-          onChange={handleChange}
-          required
-          className="w-full p-2 border border-gray-300 rounded"
-        >
-          <option value="">Select Container Size</option>
-          <option value="20ft">20ft</option>
-          <option value="40ft">40ft</option>
-        </select>
-        <label className="block">
-          Container Quantity
-          <input
-            type="number"
-            name="containerQuantity"
-            value={formData.containerQuantity}
-            onChange={handleChange}
-            placeholder="Container Quantity"
-            required
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </label>
-        <input
-          type="text"
-          name="commodity"
-          value={formData.commodity}
-          onChange={handleChange}
-          placeholder="Commodity"
-          required
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        <label className="block">
-          Weight
-          <input
-            type="number"
-            name="weight"
-            value={formData.weight}
-            onChange={handleChange}
-            placeholder="Weight"
-            required
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </label>
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            name="dg"
-            checked={formData.dg}
-            onChange={handleChange}
-            className="form-checkbox"
-          />
-          <span>Dangerous Goods</span>
-        </label>
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            name="reefer"
-            checked={formData.reefer}
-            onChange={handleChange}
-            className="form-checkbox"
-          />
-          <span>Reefer</span>
-        </label>
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            name="oog"
-            checked={formData.oog}
-            onChange={handleChange}
-            className="form-checkbox"
-          />
-          <span>Out of Gauge</span>
-        </label>
-        <input
-          type="text"
-          name="origin"
-          value={formData.origin}
-          onChange={handleChange}
-          placeholder="Origin"
-          required
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        <input
-          type="text"
-          name="destination"
-          value={formData.destination}
-          onChange={handleChange}
-          placeholder="Destination"
-          required
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        <input
-          type="text"
-          name="pol"
-          value={formData.pol}
-          onChange={handleChange}
-          placeholder="Port of Loading"
-          required
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        <input
-          type="text"
-          name="pod"
-          value={formData.pod}
-          onChange={handleChange}
-          placeholder="Port of Discharge"
-          required
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-        <label className="block">
-          Estimated Time of Departure
-          <input
-            type="datetime-local"
-            name="etd"
-            value={formData.etd}
-            onChange={handleChange}
-            required
-            className="w-full p-2 border border-gray-300 rounded"
-          />
-        </label>
-        <button
-          type="submit"
-          className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Submit
-        </button>
-      </form>
+          </div>
+
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Container Type</span>
+            </label>
+            <select
+              name="containerType"
+              value={formData.containerType}
+              onChange={handleChange}
+              required
+              className="select select-bordered w-full"
+            >
+              <option value="">Select Container Type</option>
+              <option value="DRY">DC</option>
+              <option value="HIGH_CUBE">HC</option>
+              <option value="REEFER">RF</option>
+              <option value="REEFER_HIGH_CUBE">RH</option>
+              <option value="OPEN_TOP">OT</option>
+              <option value="OPEN_TOP_HIGH_CUBE">OH</option>
+              <option value="FLAT_RACK">FR</option>
+              <option value="FLAT_RACK_HIGH_CUBE">FH</option>
+              <option value="TANK">TK</option>
+              <option value="ITkISO_TANK">ISO Tank</option>
+              <option value="OPEN_SIDE">Open Side</option>
+              <option value="DOUBLE_DOOR">Double Door</option>
+              <option value="BULK">Bulk</option>
+              <option value="VENTILATED">Ventilated</option>
+              <option value="INSULATED">IN</option>
+              <option value="HANGING">Hanging</option>
+              <option value="PLATFORM">Platform</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Container Size</span>
+            </label>
+            <select
+              name="containerSize"
+              value={formData.containerSize}
+              onChange={handleChange}
+              required
+              className="select select-bordered w-full"
+            >
+              <option value="">Select Container Size</option>
+              <option value="TWENTY_FT">20ft</option>
+              <option value="FORTY_FT">40ft</option>
+            </select>
+          </div>
+
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Container Quantity</span>
+            </label>
+            <input
+              type="number"
+              name="containerQuantity"
+              value={formData.containerQuantity}
+              onChange={handleChange}
+              placeholder="Enter quantity"
+              required
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Commodity</span>
+            </label>
+            <input
+              type="text"
+              name="commodity"
+              value={formData.commodity}
+              onChange={handleChange}
+              placeholder="Enter commodity"
+              required
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Weight</span>
+            </label>
+            <input
+              type="number"
+              name="weight"
+              value={formData.weight}
+              onChange={handleChange}
+              placeholder="Enter weight"
+              required
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          <div className="form-control">
+            <label className="label cursor-pointer">
+              <span className="label-text">Dangerous Goods</span>
+              <input
+                type="checkbox"
+                name="dg"
+                checked={formData.dg}
+                onChange={handleChange}
+                className="checkbox checkbox-primary"
+              />
+            </label>
+          </div>
+
+          <div className="form-control">
+            <label className="label cursor-pointer">
+              <span className="label-text">Reefer</span>
+              <input
+                type="checkbox"
+                name="reefer"
+                checked={formData.reefer}
+                onChange={handleChange}
+                className="checkbox checkbox-primary"
+              />
+            </label>
+          </div>
+
+          <div className="form-control">
+            <label className="label cursor-pointer">
+              <span className="label-text">Out of Gauge</span>
+              <input
+                type="checkbox"
+                name="oog"
+                checked={formData.oog}
+                onChange={handleChange}
+                className="checkbox checkbox-primary"
+              />
+            </label>
+          </div>
+
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Origin</span>
+            </label>
+            <input
+              type="text"
+              name="origin"
+              value={formData.origin}
+              onChange={handleChange}
+              placeholder="Enter origin"
+              required
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Destination</span>
+            </label>
+            <input
+              type="text"
+              name="destination"
+              value={formData.destination}
+              onChange={handleChange}
+              placeholder="Enter destination"
+              required
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Port of Loading</span>
+            </label>
+            <input
+              type="text"
+              name="pol"
+              value={formData.pol}
+              onChange={handleChange}
+              placeholder="Enter port of loading"
+              required
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Port of Discharge</span>
+            </label>
+            <input
+              type="text"
+              name="pod"
+              value={formData.pod}
+              onChange={handleChange}
+              placeholder="Enter port of discharge"
+              required
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          <div className="form-control w-full">
+            <label className="label">
+              <span className="label-text">Estimated Time of Departure</span>
+            </label>
+            <input
+              type="datetime-local"
+              name="etd"
+              value={formData.etd.toISOString().slice(0, 16)}
+              onChange={handleChange}
+              required
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          <div className="form-control mt-6">
+            <button type="submit" className="btn btn-primary">
+              Submit Booking
+            </button>
+          </div>
+        </form>
+        <Toast status={toast.status} text={toast.text} type={toast.type} />
+      </div>
     </div>
   );
 }

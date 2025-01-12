@@ -25,3 +25,21 @@ export type CustomerData = {
   city: string;
   country: string;
 };
+
+export type BookingData = {
+  customerId: string;
+  customerName?: string;
+  containerType: string;
+  containerSize: string;
+  containerQuantity: number;
+  commodity: string;
+  weight: number;
+  dg: boolean;
+  reefer: boolean;
+  oog: boolean;
+  origin: string;
+  destination: string;
+  pol: string;
+  pod: string;
+  etd: Date;
+};
