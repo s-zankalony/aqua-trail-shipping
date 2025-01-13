@@ -12,7 +12,7 @@ function Toast({
       role="alert"
       className={`${
         status === 'hidden' ? 'hidden' : 'block'
-      } alert ${type} mt-8`}
+      } alert alert-${type} mt-8`}
     >
       {/* <svg
         xmlns="http://www.w3.org/2000/svg"

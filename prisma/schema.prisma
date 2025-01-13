@@ -63,11 +63,19 @@ model SeaFreightBooking {
   commodity String
   weight Float
   dg Boolean
-  dgData DgData[]
+  unNumber String?
+  class String?
+  packingGroup String?
+  flashPoint String?
+  marinePollutant Boolean?
   reefer Boolean
-  reeferData ReeferData[]
+  temperature String?
+  ventilation String?
+  humidity String?
   oog Boolean
-  oogData OOG[]
+  overLength String?
+  overWidth String?
+  overHeight String?
   origin String
   destination String
   pol String
@@ -77,38 +85,3 @@ model SeaFreightBooking {
   updatedAt DateTime @updatedAt
 }
 
-model DgData {
-  id        String   @id @default(uuid()) @map("_id")
-  bookingId String
-  unNumber String
-  class String
-  packingGroup String
-  flashPoint String
-  marinePollutant Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  SeaFreightBooking SeaFreightBooking @relation(fields: [bookingId], references: [id])
-	@@map("dgData")
-}
-
-model ReeferData {
-  id        String   @id @default(uuid()) @map("_id")
-  bookingId String
-  temperature String
-  ventilation String
-  humidity String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  SeaFreightBooking SeaFreightBooking @relation(fields: [bookingId], references: [id])
-}
-
-model OOG {
-  id        String   @id @default(uuid()) @map("_id")
-  bookingId String
-  length String
-  width String
-  height String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  SeaFreightBooking SeaFreightBooking @relation(fields: [bookingId], references: [id])
-}

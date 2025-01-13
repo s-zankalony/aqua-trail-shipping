@@ -97,7 +97,7 @@ function SeaFreightBooking() {
       setToast({
         type: 'error',
         status: 'block',
-        text: error as string,
+        text: error instanceof Error ? error.message : 'An error occurred',
       });
     }
   };
@@ -112,6 +112,7 @@ function SeaFreightBooking() {
               <span className="label-text">Shipper Name</span>
             </label>
             <input
+              required
               type="text"
               value={search}
               onChange={(e) => {
@@ -261,6 +262,79 @@ function SeaFreightBooking() {
             </label>
           </div>
 
+          {formData.dg && (
+            <div className="pl-6 space-y-4 border-l-2 border-primary">
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">UN Number</span>
+                </label>
+                <input
+                  type="text"
+                  name="unNumber"
+                  value={formData.unNumber || ''}
+                  onChange={handleChange}
+                  placeholder="Enter UN Number"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Class</span>
+                </label>
+                <input
+                  type="text"
+                  name="class"
+                  value={formData.class || ''}
+                  onChange={handleChange}
+                  placeholder="Enter Class"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Packing Group</span>
+                </label>
+                <input
+                  type="text"
+                  name="packingGroup"
+                  value={formData.packingGroup || ''}
+                  onChange={handleChange}
+                  placeholder="Enter Packing Group"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Flash Point</span>
+                </label>
+                <input
+                  type="text"
+                  name="flashPoint"
+                  value={formData.flashPoint || ''}
+                  onChange={handleChange}
+                  placeholder="Enter Flash Point"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label cursor-pointer">
+                  <span className="label-text">Marine Pollutant</span>
+                  <input
+                    type="checkbox"
+                    name="marinePollutant"
+                    checked={formData.marinePollutant || false}
+                    onChange={handleChange}
+                    className="checkbox checkbox-primary"
+                  />
+                </label>
+              </div>
+            </div>
+          )}
+
           <div className="form-control">
             <label className="label cursor-pointer">
               <span className="label-text">Reefer</span>
@@ -274,6 +348,52 @@ function SeaFreightBooking() {
             </label>
           </div>
 
+          {formData.reefer && (
+            <div className="pl-6 space-y-4 border-l-2 border-primary">
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Temperature</span>
+                </label>
+                <input
+                  type="text"
+                  name="temperature"
+                  value={formData.temperature || ''}
+                  onChange={handleChange}
+                  placeholder="Enter Temperature"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Ventilation</span>
+                </label>
+                <input
+                  type="text"
+                  name="ventilation"
+                  value={formData.ventilation || ''}
+                  onChange={handleChange}
+                  placeholder="Enter Ventilation"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Humidity</span>
+                </label>
+                <input
+                  type="text"
+                  name="humidity"
+                  value={formData.humidity || ''}
+                  onChange={handleChange}
+                  placeholder="Enter Humidity"
+                  className="input input-bordered w-full"
+                />
+              </div>
+            </div>
+          )}
+
           <div className="form-control">
             <label className="label cursor-pointer">
               <span className="label-text">Out of Gauge</span>
@@ -286,6 +406,52 @@ function SeaFreightBooking() {
               />
             </label>
           </div>
+
+          {formData.oog && (
+            <div className="pl-6 space-y-4 border-l-2 border-primary">
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Over Length</span>
+                </label>
+                <input
+                  type="text"
+                  name="overLength"
+                  value={formData.overLength || ''}
+                  onChange={handleChange}
+                  placeholder="Enter Over Length"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Over Width</span>
+                </label>
+                <input
+                  type="text"
+                  name="overWidth"
+                  value={formData.overWidth || ''}
+                  onChange={handleChange}
+                  placeholder="Enter Over Width"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div className="form-control w-full">
+                <label className="label">
+                  <span className="label-text">Over Height</span>
+                </label>
+                <input
+                  type="text"
+                  name="overHeight"
+                  value={formData.overHeight || ''}
+                  onChange={handleChange}
+                  placeholder="Enter Over Height"
+                  className="input input-bordered w-full"
+                />
+              </div>
+            </div>
+          )}
 
           <div className="form-control w-full">
             <label className="label">
