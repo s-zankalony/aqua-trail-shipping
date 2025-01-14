@@ -2,8 +2,8 @@
 import { containerSize, containerType, PrismaClient } from '@prisma/client';
 import type { CustomerData, BookingData } from './types';
 import { generateTimeBasedId } from './helpers';
-import Toast from '@/components/Toast';
-import { text } from 'stream/consumers';
+import { validateSeafreightBooking } from './zodSchemas';
+import { z } from 'zod';
 
 const prisma = new PrismaClient();
 
@@ -55,105 +55,43 @@ export const createSeafreightBooking = async ({
 }: {
   bookingData: BookingData;
 }) => {
-  if (
-    !bookingData ||
-    !bookingData.customerId ||
-    !bookingData.containerSize ||
-    !bookingData.containerType ||
-    !bookingData.containerQuantity ||
-    !bookingData.commodity ||
-    !bookingData.weight ||
-    bookingData.dg === undefined ||
-    bookingData.reefer === undefined ||
-    bookingData.oog === undefined ||
-    !bookingData.origin ||
-    !bookingData.destination ||
-    !bookingData.pol ||
-    !bookingData.pod ||
-    !bookingData.etd
-  ) {
-    throw new Error('Please complete all required booking data fields');
+  try {
+    const validatedData = validateSeafreightBooking(bookingData);
+
+    const newSeafreightBooking = await prisma.seaFreightBooking.create({
+      data: {
+        id: generateTimeBasedId(),
+        customerId: validatedData.customerId,
+        containerSize: validatedData.containerSize,
+        containerType: validatedData.containerType,
+        containerQuantity: validatedData.containerQuantity,
+        commodity: validatedData.commodity,
+        weight: validatedData.weight,
+        dg: validatedData.dg,
+        unNumber: validatedData.unNumber || '',
+        class: validatedData.class || '',
+        packingGroup: validatedData.packingGroup || '',
+        flashPoint: validatedData.flashPoint || '',
+        marinePollutant: validatedData.marinePollutant || false,
+        reefer: validatedData.reefer,
+        temperature: validatedData.temperature || '',
+        ventilation: validatedData.ventilation || '',
+        humidity: validatedData.humidity || '',
+        oog: validatedData.oog,
+        overLength: validatedData.overLength || '',
+        overWidth: validatedData.overWidth || '',
+        overHeight: validatedData.overHeight || '',
+        origin: validatedData.origin,
+        destination: validatedData.destination,
+        pol: validatedData.pol,
+        pod: validatedData.pod,
+        etd: validatedData.etd,
+      },
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw new Error(error.errors.map((e) => e.message).join(', '));
+    }
+    throw error;
   }
-  if (
-    bookingData.dg &&
-    (!bookingData.class ||
-      !bookingData.unNumber ||
-      !bookingData.flashPoint ||
-      !bookingData.packingGroup)
-  ) {
-    throw new Error('Pls complete DG details');
-  }
-  if (
-    (bookingData.class ||
-      bookingData.unNumber ||
-      bookingData.flashPoint ||
-      bookingData.packingGroup) &&
-    !bookingData.dg
-  ) {
-    throw new Error(
-      'Pls recheck DG details. Shipment is not marked as DG but there is DG data inserted'
-    );
-  }
-  if (
-    bookingData.reefer &&
-    (!bookingData.temperature ||
-      !bookingData.ventilation ||
-      !bookingData.humidity)
-  ) {
-    throw new Error('Pls complete reefer details');
-  }
-  if (
-    !bookingData.reefer &&
-    (bookingData.temperature || bookingData.ventilation || bookingData.humidity)
-  ) {
-    throw new Error(
-      'Pls recheck reefer details. Shipment is not marked as reefer but there is reefer data inserted.'
-    );
-  }
-  if (
-    bookingData.oog &&
-    (!bookingData.overHeight ||
-      !bookingData.overLength ||
-      !bookingData.overWidth)
-  ) {
-    throw new Error('Pls complete OOG details');
-  }
-  if (
-    !bookingData.oog &&
-    (bookingData.overHeight || bookingData.overLength || bookingData.overWidth)
-  ) {
-    throw new Error(
-      'Pls recheck OOG details. Shipment is not marked as OOG, but there is OOG data inserted.'
-    );
-  }
-  const newSeafreightBooking = await prisma.seaFreightBooking.create({
-    data: {
-      id: generateTimeBasedId(),
-      customerId: bookingData.customerId,
-      containerSize: bookingData.containerSize as containerSize,
-      containerType: bookingData.containerType as containerType,
-      containerQuantity: bookingData.containerQuantity,
-      commodity: bookingData.commodity,
-      weight: bookingData.weight,
-      dg: bookingData.dg || false,
-      unNumber: bookingData.unNumber || '',
-      class: bookingData.class || '',
-      packingGroup: bookingData.packingGroup || '',
-      flashPoint: bookingData.flashPoint || '',
-      marinePollutant: bookingData.marinePollutant || false,
-      reefer: bookingData.reefer || false,
-      temperature: bookingData.temperature || '',
-      ventilation: bookingData.ventilation || '',
-      humidity: bookingData.humidity || '',
-      oog: bookingData.oog || false,
-      overLength: bookingData.overLength || '',
-      overWidth: bookingData.overWidth || '',
-      overHeight: bookingData.overHeight || '',
-      origin: bookingData.origin,
-      destination: bookingData.destination,
-      pol: bookingData.pol,
-      pod: bookingData.pod,
-      etd: bookingData.etd,
-    },
-  });
 };
