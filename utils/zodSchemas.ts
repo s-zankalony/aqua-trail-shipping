@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { containerSize, containerType } from '@prisma/client';
+import { ContainerSize, ContainerType } from '@prisma/client';
 
 export const SeafreightBookingSchema = z
   .object({
     customerId: z.string().min(1, 'Customer ID is required'),
-    containerSize: z.nativeEnum(containerSize),
-    containerType: z.nativeEnum(containerType),
+    containerSize: z.nativeEnum(ContainerSize),
+    containerType: z.nativeEnum(ContainerType),
     containerQuantity: z
       .number()
       .positive('Container quantity must be positive'),

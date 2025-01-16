@@ -9,12 +9,35 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
+
+model User {
+  id        String    @id @default(uuid())
+  password  String    @db.VarChar(100)
+  name      String    @db.VarChar(100)
+  email     String    @unique       @db.VarChar(255)
+  phone     String?   @default("")  @db.VarChar(20)
+  city      String?   @default("")  @db.VarChar(100)
+  country   Country?  
+  active    Boolean   @default(true)
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt DateTime  @updatedAt @db.Timestamp(6)
+  bookings  SeaFreightBooking[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+
+
 model Customer {
-  id        String   @id @default(uuid()) @map("_id")
+  id        String   @id @default(uuid())
   name      String
   email     String
   phone     String
@@ -27,61 +50,341 @@ model Customer {
   SeaFreightBooking SeaFreightBooking[]
 }
 
-enum containerSize {
+enum ContainerSize {
   TWENTY_FT  @map("20ft")
   FORTY_FT   @map("40ft")
+	@@map("containerSize")
 }
 
-enum containerType {
-  DRY      @map("DC")
-  REEFER  @map("RF")
-  REEFER_HIGH_CUBE @map("RH")
-  OPEN_TOP  @map("OT")
-  OPEN_TOP_HIGH_CUBE @map("OH")
+enum ContainerType {
+  DRY                 @map("DC")
+  REEFER              @map("RF")
+  REEFER_HIGH_CUBE    @map("RH")
+  OPEN_TOP            @map("OT")
+  OPEN_TOP_HIGH_CUBE  @map("OH")
   FLAT_RACK @map("FR")
   FLAT_RACK_HIGH_CUBE @map("FH")
-  TANK    @map("TK")
-  ISO_TANK  @map("ITk")
-  HIGH_CUBE @map("HC")
-  OPEN_SIDE @map("Open Side")
-  DOUBLE_DOOR @map("Double Door")
+  TANK                @map("TK")
+  ISO_TANK            @map("ITk")
+  HIGH_CUBE           @map("HC")
+  OPEN_SIDE           @map("Open Side")
+  DOUBLE_DOOR         @map("Double Door")
   BULK
   VENTILATED
-  INSULATED @map("IN")
+  INSULATED           @map("IN")
   HANGING
-  PLATFORM  @map("PL")
+  PLATFORM            @map("PL")
   OTHER
+	@@map("containerType")
 }
 
 model SeaFreightBooking {
-  id        String   @id @default(uuid()) @map("_id")
-  shipper  Customer @relation(fields: [customerId], references: [id])
+  id        String            @id @default(uuid())
+  userId    String
   customerId String
-  containerType containerType
-  containerSize containerSize
+  containerType ContainerType
+  containerSize ContainerSize
   containerQuantity Int
-  commodity String
+  commodity String            @db.VarChar(255)
   weight Float
-  dg Boolean
-  unNumber String?
-  class String?
-  packingGroup String?
-  flashPoint String?
-  marinePollutant Boolean?
-  reefer Boolean
-  temperature String?
-  ventilation String?
-  humidity String?
-  oog Boolean
-  overLength String?
-  overWidth String?
-  overHeight String?
-  origin String
-  destination String
-  pol String
-  pod String
-  etd DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  dg Boolean                  @default(false)
+  unNumber String?            @db.Char(4)
+  class String?               @db.Char(2)
+  packingGroup String?        @db.Char(3)
+  flashPoint String?          @db.VarChar(2)
+  marinePollutant Boolean?    @default(false)
+  reefer Boolean              @default(false)
+  temperature String?         @db.Char(2)
+  ventilation String?         @db.Char(4)
+  humidity String?            @db.Char(4)
+  oog Boolean                 @default(false)
+  overLength String?          @db.VarChar(5)
+  overWidth String?           @db.VarChar(5)
+  overHeight String?          @db.VarChar(5)
+  origin String               @db.VarChar(20)
+  destination String          @db.VarChar(20)
+  pol String                  @db.VarChar(20)
+  pod String                  @db.VarChar(20)
+  etd DateTime                @db.Date
+  status  BookingStatus       @default(PENDING) 
+  createdAt DateTime          @default(now()) @db.Timestamp(6)
+  updatedAt DateTime          @updatedAt @db.Timestamp(6)
+
+
+  // relations
+  user      User    @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  shipper  Customer @relation(fields: [customerId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+
+  // indexes
+  @@index([userId])
+  @@index([customerId])
+  @@index([status])
+  @@map("sea_freight_bookings")
 }
 
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+
+enum Country {
+  Afghanistan @map("AF")
+  AlandIslands @map("AX")
+  Albania @map("AL")
+  Algeria @map("DZ")
+  AmericanSamoa @map("AS")
+  Andorra @map("AD")
+  Angola @map("AO")
+  Anguilla @map("AI")
+  Antarctica @map("AQ")
+  AntiguaAndBarbuda @map("AG")
+  Argentina @map("AR")
+  Armenia @map("AM")
+  Aruba @map("AW")
+  Australia @map("AU")
+  Austria @map("AT")
+  Azerbaijan @map("AZ")
+  Bahamas @map("BS")
+  Bahrain @map("BH")
+  Bangladesh @map("BD")
+  Barbados @map("BB")
+  Belarus @map("BY")
+  Belgium @map("BE")
+  Belize @map("BZ")
+  Benin @map("BJ")
+  Bermuda @map("BM")
+  Bhutan @map("BT")
+  Bolivia @map("BO")
+  BonaireSintEustatiusSaba @map("BQ")
+  BosniaAndHerzegovina @map("BA")
+  Botswana @map("BW")
+  BouvetIsland @map("BV")
+  Brazil @map("BR")
+  BritishIndianOceanTerritory @map("IO")
+  BruneiDarussalam @map("BN")
+  Bulgaria @map("BG")
+  BurkinaFaso @map("BF")
+  Burundi @map("BI")
+  Cambodia @map("KH")
+  Cameroon @map("CM")
+  Canada @map("CA")
+  CapeVerde @map("CV")
+  CaymanIslands @map("KY")
+  CentralAfricanRepublic @map("CF")
+  Chad @map("TD")
+  Chile @map("CL")
+  China @map("CN")
+  ChristmasIsland @map("CX")
+  CocosKeelingIslands @map("CC")
+  Colombia @map("CO")
+  Comoros @map("KM")
+  Congo @map("CG")
+  CongoDemocraticRepublic @map("CD")
+  CookIslands @map("CK")
+  CostaRica @map("CR")
+  CoteDIvoire @map("CI")
+  Croatia @map("HR")
+  Cuba @map("CU")
+  Curaçao @map("CW")
+  Cyprus @map("CY")
+  CzechRepublic @map("CZ")
+  Denmark @map("DK")
+  Djibouti @map("DJ")
+  Dominica @map("DM")
+  DominicanRepublic @map("DO")
+  Ecuador @map("EC")
+  Egypt @map("EG")
+  ElSalvador @map("SV")
+  EquatorialGuinea @map("GQ")
+  Eritrea @map("ER")
+  Estonia @map("EE")
+  Ethiopia @map("ET")
+  FalklandIslands @map("FK")
+  FaroeIslands @map("FO")
+  Fiji @map("FJ")
+  Finland @map("FI")
+  France @map("FR")
+  FrenchGuiana @map("GF")
+  FrenchPolynesia @map("PF")
+  FrenchSouthernTerritories @map("TF")
+  Gabon @map("GA")
+  Gambia @map("GM")
+  Georgia @map("GE")
+  Germany @map("DE")
+  Ghana @map("GH")
+  Gibraltar @map("GI")
+  Greece @map("GR")
+  Greenland @map("GL")
+  Grenada @map("GD")
+  Guadeloupe @map("GP")
+  Guam @map("GU")
+  Guatemala @map("GT")
+  Guernsey @map("GG")
+  Guinea @map("GN")
+  GuineaBissau @map("GW")
+  Guyana @map("GY")
+  Haiti @map("HT")
+  HeardIslandMcdonaldIslands @map("HM")
+  HolySeeVaticanCityState @map("VA")
+  Honduras @map("HN")
+  HongKong @map("HK")
+  Hungary @map("HU")
+  Iceland @map("IS")
+  India @map("IN")
+  Indonesia @map("ID")
+  Iran @map("IR")
+  Iraq @map("IQ")
+  Ireland @map("IE")
+  IsleOfMan @map("IM")
+  Israel @map("IL")
+  Italy @map("IT")
+  Jamaica @map("JM")
+  Japan @map("JP")
+  Jersey @map("JE")
+  Jordan @map("JO")
+  Kazakhstan @map("KZ")
+  Kenya @map("KE")
+  Kiribati @map("KI")
+  Korea @map("KR")
+  KoreaDemocraticPeoplesRepublic @map("KP")
+  Kuwait @map("KW")
+  Kyrgyzstan @map("KG")
+  LaoPeoplesDemocraticRepublic @map("LA")
+  Latvia @map("LV")
+  Lebanon @map("LB")
+  Lesotho @map("LS")
+  Liberia @map("LR")
+  LibyanArabJamahiriya @map("LY")
+  Liechtenstein @map("LI")
+  Lithuania @map("LT")
+  Luxembourg @map("LU")
+  Macao @map("MO")
+  Macedonia @map("MK")
+  Madagascar @map("MG")
+  Malawi @map("MW")
+  Malaysia @map("MY")
+  Maldives @map("MV")
+  Mali @map("ML")
+  Malta @map("MT")
+  MarshallIslands @map("MH")
+  Martinique @map("MQ")
+  Mauritania @map("MR")
+  Mauritius @map("MU")
+  Mayotte @map("YT")
+  Mexico @map("MX")
+  Micronesia @map("FM")
+  Moldova @map("MD")
+  Monaco @map("MC")
+  Mongolia @map("MN")
+  Montenegro @map("ME")
+  Montserrat @map("MS")
+  Morocco @map("MA")
+  Mozambique @map("MZ")
+  Myanmar @map("MM")
+  Namibia @map("NA")
+  Nauru @map("NR")
+  Nepal @map("NP")
+  Netherlands @map("NL")
+  NewCaledonia @map("NC")
+  NewZealand @map("NZ")
+  Nicaragua @map("NI")
+  Niger @map("NE")
+  Nigeria @map("NG")
+  Niue @map("NU")
+  NorfolkIsland @map("NF")
+  NorthernMarianaIslands @map("MP")
+  Norway @map("NO")
+  Oman @map("OM")
+  Pakistan @map("PK")
+  Palau @map("PW")
+  PalestinianTerritory @map("PS")
+  Panama @map("PA")
+  PapuaNewGuinea @map("PG")
+  Paraguay @map("PY")
+  Peru @map("PE")
+  Philippines @map("PH")
+  Pitcairn @map("PN")
+  Poland @map("PL")
+  Portugal @map("PT")
+  PuertoRico @map("PR")
+  Qatar @map("QA")
+  Reunion @map("RE")
+  Romania @map("RO")
+  RussianFederation @map("RU")
+  Rwanda @map("RW")
+  SaintBarthelemy @map("BL")
+  SaintHelena @map("SH")
+  SaintKittsAndNevis @map("KN")
+  SaintLucia @map("LC")
+  SaintMartin @map("MF")
+  SaintPierreAndMiquelon @map("PM")
+  SaintVincentAndGrenadines @map("VC")
+  Samoa @map("WS")
+  SanMarino @map("SM")
+  SaoTomeAndPrincipe @map("ST")
+  SaudiArabia @map("SA")
+  Senegal @map("SN")
+  Serbia @map("RS")
+  Seychelles @map("SC")
+  SierraLeone @map("SL")
+  Singapore @map("SG")
+  SintMaarten @map("SX")
+  Slovakia @map("SK")
+  Slovenia @map("SI")
+  SolomonIslands @map("SB")
+  Somalia @map("SO")
+  SouthAfrica @map("ZA")
+  SouthGeorgiaAndSandwichIsl @map("GS")
+  SouthSudan @map("SS")
+  Spain @map("ES")
+  SriLanka @map("LK")
+  Sudan @map("SD")
+  Suriname @map("SR")
+  SvalbardAndJanMayen @map("SJ")
+  Swaziland @map("SZ")
+  Sweden @map("SE")
+  Switzerland @map("CH")
+  SyrianArabRepublic @map("SY")
+  Taiwan @map("TW")
+  Tajikistan @map("TJ")
+  Tanzania @map("TZ")
+  Thailand @map("TH")
+  TimorLeste @map("TL")
+  Togo @map("TG")
+  Tokelau @map("TK")
+  Tonga @map("TO")
+  TrinidadAndTobago @map("TT")
+  Tunisia @map("TN")
+  Turkey @map("TR")
+  Turkmenistan @map("TM")
+  TurksAndCaicosIslands @map("TC")
+  Tuvalu @map("TV")
+  Uganda @map("UG")
+  Ukraine @map("UA")
+  UnitedArabEmirates @map("AE")
+  UnitedKingdom @map("GB")
+  UnitedStates @map("US")
+  UnitedStatesOutlyingIslands @map("UM")
+  Uruguay @map("UY")
+  Uzbekistan @map("UZ")
+  Vanuatu @map("VU")
+  Venezuela @map("VE")
+  Vietnam @map("VN")
+  VirginIslandsBritish @map("VG")
+  VirginIslandsUS @map("VI")
+  WallisAndFutuna @map("WF")
+  WesternSahara @map("EH")
+  Yemen @map("YE")
+  Zambia @map("ZM")
+  Zimbabwe @map("ZW")
+	@@map("country")
+}
