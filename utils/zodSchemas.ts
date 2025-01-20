@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ContainerSize, ContainerType } from '@prisma/client';
+import { ContainerSize, ContainerType, Country } from '@prisma/client';
 
 export const SeafreightBookingSchema = z
   .object({
@@ -74,6 +74,33 @@ export const validateSeafreightBooking = (
     return validatedData;
   } catch (error) {
     // Re-throw the Zod error for handling by the caller
+    throw error;
+  }
+};
+
+export const UserRegistrationSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    ),
+  phone: z.string().optional(),
+  city: z.string().optional(),
+  country: z.nativeEnum(Country).optional(),
+});
+
+export type UserRegistrationInput = z.infer<typeof UserRegistrationSchema>;
+
+export const validateUserRegistration = (
+  data: unknown
+): UserRegistrationInput => {
+  try {
+    return UserRegistrationSchema.parse(data);
+  } catch (error) {
     throw error;
   }
 };

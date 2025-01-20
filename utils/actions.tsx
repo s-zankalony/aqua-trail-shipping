@@ -1,5 +1,5 @@
 'use server';
-import { containerSize, containerType, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import type { CustomerData, BookingData } from './types';
 import { generateTimeBasedId } from './helpers';
 import { validateSeafreightBooking } from './zodSchemas';
@@ -58,9 +58,11 @@ export const createSeafreightBooking = async ({
   try {
     const validatedData = validateSeafreightBooking(bookingData);
 
+    const userId = await getUser();
     const newSeafreightBooking = await prisma.seaFreightBooking.create({
       data: {
         id: generateTimeBasedId(),
+        userId: userId,
         customerId: validatedData.customerId,
         containerSize: validatedData.containerSize,
         containerType: validatedData.containerType,
@@ -94,4 +96,8 @@ export const createSeafreightBooking = async ({
     }
     throw error;
   }
+};
+
+export const getUser = async (): Promise<string> => {
+  return '';
 };
