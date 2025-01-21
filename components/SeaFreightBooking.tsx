@@ -85,7 +85,6 @@ function SeaFreightBooking() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission
-    console.log(formData);
     try {
       await createSeafreightBooking({ bookingData: formData });
       setToast({

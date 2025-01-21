@@ -8,8 +8,15 @@ import {
   type UserRegistrationInput,
 } from '@/utils/zodSchemas';
 import { Country } from '@prisma/client';
+import { createUser } from '@/utils/actions';
+import Toast from '@/components/Toast';
 
 function UserRegisterPage() {
+  const [toast, setToast] = useState({
+    text: '',
+    type: '',
+    status: 'hidden',
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -23,20 +30,27 @@ function UserRegisterPage() {
   const onSubmit = async (data: UserRegistrationInput) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
+      const user = await createUser({ userData: data });
 
-      if (!response.ok) {
-        throw new Error('Registration failed');
+      if (user) {
+        // Redirect to login or dashboard
+        setToast({
+          text: 'Successfully registered',
+          type: 'success',
+          status: 'block',
+        });
+        setTimeout(() => {
+          setToast({ text: '', type: '', status: 'hidden' });
+          window.location.href = '/login';
+        }, 5000);
       }
-
-      // Redirect to login or dashboard
-      window.location.href = '/login';
     } catch (error) {
       console.error('Registration error:', error);
+      setToast({
+        type: 'error',
+        status: 'block',
+        text: error instanceof Error ? error.message : 'An error occurred',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -178,6 +192,9 @@ function UserRegisterPage() {
               </button>
             </div>
           </form>
+          <div className="mt-8">
+            <Toast status={toast.status} text={toast.text} type={toast.type} />
+          </div>
         </div>
       </div>
     </div>

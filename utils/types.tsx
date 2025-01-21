@@ -54,3 +54,14 @@ export type BookingData = {
   pod: string;
   etd: Date;
 };
+
+export type UserData = {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  city?: string;
+  country?: string;
+  active?: boolean;
+  role?: string;
+};
