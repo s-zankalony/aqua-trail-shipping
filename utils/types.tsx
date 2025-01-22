@@ -65,3 +65,13 @@ export type UserData = {
   active?: boolean;
   role?: string;
 };
+
+export type UserDataNoPassword = {
+  name: string;
+  email: string;
+  phone?: string;
+  city?: string;
+  country?: string;
+  active?: boolean;
+  role?: string;
+};

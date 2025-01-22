@@ -1,10 +1,7 @@
 'use client';
-
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserLoginSchema, UserLoginInput } from '@/utils/zodSchemas';
-import { register } from 'module';
 import { login } from '@/utils/actions';
 import { redirect } from 'next/navigation';
 
@@ -68,6 +65,12 @@ function LoginPage() {
               <button type="submit" className="btn btn-primary">
                 Login
               </button>
+            </div>
+            <div className="text-center mt-4">
+              Don't have an account?{' '}
+              <a href="/register" className="link link-primary">
+                Register here
+              </a>
             </div>
           </form>
         </div>

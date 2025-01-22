@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -10,15 +10,21 @@ import {
 import { Country } from '@prisma/client';
 import { createUser } from '@/utils/actions';
 import Toast from '@/components/Toast';
+import { redirect } from 'next/navigation';
+import { useAuth } from '@/components/useAuth';
 
 function UserRegisterPage() {
+  // 1. Auth hook
+  const { user, loading } = useAuth();
+  // 2. State hooks
+  const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState({
     text: '',
     type: '',
     status: 'hidden',
   });
-  const [isLoading, setIsLoading] = useState(false);
 
+  // 3. Form hook
   const {
     register,
     handleSubmit,
@@ -26,6 +32,21 @@ function UserRegisterPage() {
   } = useForm<UserRegistrationInput>({
     resolver: zodResolver(UserRegistrationSchema),
   });
+
+  // 4. Effects
+  useEffect(() => {
+    if (user) {
+      setToast({
+        text: 'Already registered.. register a new user?',
+        type: 'warning',
+        status: 'block',
+      });
+    }
+  }, [user]);
+
+  if (loading) {
+    return <h1 className="text-5xl">Loading...</h1>;
+  }
 
   const onSubmit = async (data: UserRegistrationInput) => {
     setIsLoading(true);
@@ -64,6 +85,12 @@ function UserRegisterPage() {
           <p className="py-6">
             Join Aqua Trail Shipping to manage your shipments efficiently.
           </p>
+          <div className="text-center lg:text-left">
+            Already have an account?{' '}
+            <a href="/login" className="link link-primary">
+              Login here
+            </a>
+          </div>
         </div>
         <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
           <form className="card-body" onSubmit={handleSubmit(onSubmit)}>

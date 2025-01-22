@@ -129,6 +129,7 @@ export const createUser = async ({ userData }: { userData: UserData }) => {
   }
 };
 
+// login function
 export const login = async ({ loginData }: { loginData: UserLoginInput }) => {
   const foundUser = await prisma.user.findUnique({
     where: { email: loginData.email },
@@ -146,7 +147,30 @@ export const login = async ({ loginData }: { loginData: UserLoginInput }) => {
   const token = jwt.sign({ userId: foundUser.id }, process.env.JWT_SECRET!, {
     expiresIn: '1h',
   });
-  return { token, user: foundUser };
+
+  const cookieStore = await cookies();
+  cookieStore.set('token', token, {
+    httpOnly: false, // Allow JS access
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60, // 1 hour in seconds
+    path: '/',
+  });
+
+  const { password: _, ...userWithoutPassword } = foundUser;
+
+  return { success: true, user: userWithoutPassword };
+};
+
+export const logout = async (): Promise<{ success: boolean }> => {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete('token');
+    return { success: true };
+  } catch (error) {
+    console.error('Logout error:', error);
+    throw new Error('Failed to logout');
+  }
 };
 
 export const getUserId = async (): Promise<string> => {
@@ -161,17 +185,26 @@ export const getUserId = async (): Promise<string> => {
     return '';
   }
 };
+
 export const getUserData = async () => {
-  const userId = await getUserId();
-  if (!userId) return null;
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+    if (!token) return null;
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      userId: string;
+    };
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+    });
 
-  if (!user) return null;
-  const { password: _, ...userWithoutPassword } = user;
-  return userWithoutPassword;
+    if (!user) return null;
+
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  } catch (error) {
+    console.error('Get user data error:', error);
+    return null;
+  }
 };
-
-// test comment

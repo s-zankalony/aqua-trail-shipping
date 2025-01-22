@@ -1,4 +1,20 @@
+'use client';
+import { logout } from '@/utils/actions';
+import { useAuth } from './useAuth';
+
 function Avatar() {
+  const { user, loading } = useAuth();
+
+  // console.log('User: ', user);
+
+  if (loading) {
+    return (
+      <div className="btn btn-ghost btn-circle avatar">
+        <div className="w-10 rounded-full animate-pulse bg-gray-200" />
+      </div>
+    );
+  }
+
   return (
     <div className="dropdown dropdown-end">
       <div
@@ -8,7 +24,7 @@ function Avatar() {
       >
         <div className="w-10 rounded-full">
           <img
-            alt="Tailwind CSS Navbar component"
+            alt={user ? `${user.name}'s avatar` : 'Default avatar'}
             src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
           />
         </div>
@@ -27,7 +43,19 @@ function Avatar() {
           <a>Settings</a>
         </li>
         <li>
-          <a href="/register">Login/Register</a>
+          {user ? (
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                logout();
+              }}
+            >
+              Logout
+            </a>
+          ) : (
+            <a href="/login">Login/Register</a>
+          )}
         </li>
       </ul>
     </div>
