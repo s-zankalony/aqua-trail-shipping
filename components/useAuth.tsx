@@ -26,6 +26,7 @@ export function useAuth() {
               phone: userData.phone ?? undefined,
               city: userData.city ?? undefined,
               country: userData.country ?? undefined,
+              image: userData.image ?? undefined,
             });
           }
         }
