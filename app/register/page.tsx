@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  ImageSchema,
   UserRegistrationSchema,
   type UserRegistrationInput,
 } from '@/utils/zodSchemas';
@@ -12,6 +13,7 @@ import { createUser } from '@/utils/actions';
 import Toast from '@/components/Toast';
 import { redirect } from 'next/navigation';
 import { useAuth } from '@/components/useAuth';
+import { z } from 'zod';
 
 function UserRegisterPage() {
   // 1. Auth hook
@@ -23,6 +25,8 @@ function UserRegisterPage() {
     type: '',
     status: 'hidden',
   });
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imageError, setImageError] = useState<string>('');
 
   // 3. Form hook
   const {
@@ -48,10 +52,45 @@ function UserRegisterPage() {
     return <h1 className="text-5xl">Loading...</h1>;
   }
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      try {
+        ImageSchema.shape.file.parse(file);
+        setSelectedImage(file);
+        setImageError('');
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          setImageError(error.errors[0].message);
+        }
+      }
+    }
+  };
+
   const onSubmit = async (data: UserRegistrationInput) => {
     setIsLoading(true);
     try {
-      const user = await createUser({ userData: data });
+      const formData = new FormData();
+
+      // Add all text fields
+      Object.keys(data).forEach((key) => {
+        if (key !== 'image') {
+          const value = data[key as keyof UserRegistrationInput];
+          if (value !== undefined) {
+            formData.append(key, value.toString());
+          }
+        }
+      });
+
+      // Add file if it exists
+      if (selectedImage && selectedImage instanceof File) {
+        formData.append('image', selectedImage);
+      }
+
+      const user = await createUser({
+        userData: data,
+        file: selectedImage,
+      });
 
       if (user) {
         // Redirect to login or dashboard
@@ -76,6 +115,11 @@ function UserRegisterPage() {
       setIsLoading(false);
     }
   };
+
+  // Type guard
+  // const isfileObject = (value: any): value is File => {
+  //   return value instanceof File;
+  // };
 
   return (
     <div className="min-h-screen hero bg-base-200">
@@ -200,6 +244,25 @@ function UserRegisterPage() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Profile Image</span>
+              </label>
+              <input
+                type="file"
+                onChange={handleImageChange}
+                accept="image/jpeg,image/png,image/webp"
+                className="file-input file-input-bordered w-full"
+              />
+              {imageError && (
+                <label className="label">
+                  <span className="label-text-alt text-error">
+                    {imageError}
+                  </span>
+                </label>
+              )}
             </div>
 
             <div className="form-control mt-6">

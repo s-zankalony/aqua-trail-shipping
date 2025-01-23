@@ -5,7 +5,7 @@ import { useAuth } from './useAuth';
 function Avatar() {
   const { user, loading } = useAuth();
 
-  // console.log('User: ', user);
+  console.log('User: ', user);
 
   if (loading) {
     return (
@@ -25,7 +25,11 @@ function Avatar() {
         <div className="w-10 rounded-full">
           <img
             alt={user ? `${user.name}'s avatar` : 'Default avatar'}
-            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+            src={
+              user?.image
+                ? user.image
+                : 'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp'
+            }
           />
         </div>
       </div>

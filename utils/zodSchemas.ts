@@ -78,6 +78,18 @@ export const validateSeafreightBooking = (
   }
 };
 
+export const ImageSchema = z.object({
+  file: z
+    .instanceof(File)
+    .refine((file) => file.size <= 5000000, 'File size must be less than 5MB')
+    .refine(
+      (file) => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
+      'Only .jpg, .png, and .webp files are accepted'
+    ),
+});
+
+export type ImageInput = z.infer<typeof ImageSchema>;
+
 export const UserRegistrationSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
@@ -91,6 +103,7 @@ export const UserRegistrationSchema = z.object({
   phone: z.string().optional(),
   city: z.string().optional(),
   country: z.nativeEnum(Country).optional(),
+  image: z.string().optional(),
 });
 
 export type UserRegistrationInput = z.infer<typeof UserRegistrationSchema>;

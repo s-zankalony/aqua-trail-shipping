@@ -64,6 +64,7 @@ export type UserData = {
   country?: string;
   active?: boolean;
   role?: string;
+  image?: string;
 };
 
 export type UserDataNoPassword = {
@@ -74,4 +75,5 @@ export type UserDataNoPassword = {
   country?: string;
   active?: boolean;
   role?: string;
+  image?: string;
 };
