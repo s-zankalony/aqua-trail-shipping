@@ -1,6 +1,11 @@
 'use server';
 import { Country, PrismaClient } from '@prisma/client';
-import type { CustomerData, BookingData, UserData } from './types';
+import type {
+  CustomerData,
+  BookingData,
+  UserData,
+  UserDataNoPassword,
+} from './types';
 import { generateTimeBasedId } from './helpers';
 import {
   ImageSchema,
@@ -127,30 +132,23 @@ export const createSeafreightBooking = async ({
 
 export const uploadImage = async (file: File): Promise<string> => {
   try {
-    // 1. Validate the file
     const validatedFile = ImageSchema.shape.file.parse(file);
-    console.log('File validated successfully');
-
-    // 2. Get file extension and generate filename
     const fileExt = validatedFile.name.split('.').pop();
     const fileName = `${Date.now()}_${Math.random()
       .toString(36)
       .substring(7)}.${fileExt}`;
 
-    // 3. Create file options with proper content type
     const options = {
       contentType: validatedFile.type,
       cacheControl: '3600',
       upsert: false,
     };
 
-    // 4. Upload with proper error handling
     const { data, error } = await supabase.storage
       .from('user-images')
       .upload(fileName, validatedFile, options);
 
     if (error) {
-      console.error('Supabase upload error:', error);
       throw new Error(`Failed to upload image: ${error.message}`);
     }
 
@@ -158,7 +156,6 @@ export const uploadImage = async (file: File): Promise<string> => {
       throw new Error('Upload successful but no data returned');
     }
 
-    // 5. Get public URL
     const {
       data: { publicUrl },
     } = supabase.storage.from('user-images').getPublicUrl(fileName);
@@ -167,16 +164,49 @@ export const uploadImage = async (file: File): Promise<string> => {
       throw new Error('Failed to get public URL for uploaded image');
     }
 
-    console.log('Image uploaded successfully:', publicUrl);
     return publicUrl;
   } catch (error) {
-    console.error('Error in uploadImage:', error);
     if (error instanceof Error) {
       throw new Error(`Image upload failed: ${error.message}`);
     }
     throw new Error('Image upload failed with unknown error');
   }
 };
+
+export async function retrievePhoto({ user }: { user: UserDataNoPassword }) {
+  if (!user?.image) return null;
+
+  try {
+    const fileName = user.image.split('/').pop();
+    if (!fileName) {
+      return null;
+    }
+
+    const supabase = createClient(supabaseUrl!, supabaseAnonKey!, {
+      auth: { persistSession: false },
+    });
+
+    const { data: signedData } = await supabase.storage
+      .from('user-images')
+      .createSignedUrl(fileName, 3600);
+
+    if (signedData?.signedUrl) {
+      return signedData.signedUrl;
+    }
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('user-images').getPublicUrl(fileName);
+
+    if (publicUrl) {
+      return publicUrl;
+    }
+
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
 
 export const createUser = async ({
   userData,

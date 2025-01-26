@@ -1,11 +1,47 @@
 'use client';
-import { logout } from '@/utils/actions';
+import { logout, retrievePhoto } from '@/utils/actions';
 import { useAuth } from './useAuth';
+import { useEffect, useState } from 'react';
 
 function Avatar() {
   const { user, loading } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
 
-  console.log('User: ', user);
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchAvatar() {
+      if (user?.image) {
+        try {
+          const publicUrl = await retrievePhoto({ user });
+          if (isMounted) {
+            if (publicUrl) {
+              setAvatarUrl(publicUrl);
+              setImageError(false);
+            } else {
+              setImageError(true);
+            }
+          }
+        } catch (error) {
+          if (isMounted) {
+            setImageError(true);
+          }
+        }
+      } else {
+        if (isMounted) {
+          setAvatarUrl(null);
+          setImageError(false);
+        }
+      }
+    }
+
+    fetchAvatar();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user]);
 
   if (loading) {
     return (
@@ -14,6 +50,8 @@ function Avatar() {
       </div>
     );
   }
+
+  const fallbackImage = '/images/aqua-trail-shipping.jpg';
 
   return (
     <div className="dropdown dropdown-end">
@@ -25,11 +63,21 @@ function Avatar() {
         <div className="w-10 rounded-full">
           <img
             alt={user ? `${user.name}'s avatar` : 'Default avatar'}
-            src={
-              user?.image
-                ? user.image
-                : 'https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp'
-            }
+            src={!imageError && avatarUrl ? avatarUrl : fallbackImage}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              console.error('Image load error:', {
+                attemptedSrc: target.src,
+                timestamp: new Date().toISOString(),
+                userName: user?.name,
+                userEmail: user?.email,
+                storedImagePath: user?.image,
+                error: e.type,
+              });
+              setImageError(true);
+              target.src = fallbackImage;
+            }}
+            className="object-cover"
           />
         </div>
       </div>
@@ -65,7 +113,5 @@ function Avatar() {
     </div>
   );
 }
-export default Avatar;
 
-// test comment
-// test 2
+export default Avatar;
