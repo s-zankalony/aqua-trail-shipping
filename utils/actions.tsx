@@ -20,6 +20,7 @@ import { cookies } from 'next/headers';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
+import { revalidatePath } from 'next/cache';
 
 // Get environment variables with validation
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

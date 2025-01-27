@@ -3,9 +3,19 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { UserLoginSchema, UserLoginInput } from '@/utils/zodSchemas';
 import { login } from '@/utils/actions';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import Toast from '@/components/Toast';
+import { useAuth } from '@/components/useAuth';
 
 function LoginPage() {
+  const router = useRouter();
+  const { revalidate } = useAuth();
+  const [toast, setToast] = useState({
+    text: '',
+    type: '',
+    status: 'hidden',
+  });
   const {
     register,
     handleSubmit,
@@ -14,8 +24,25 @@ function LoginPage() {
 
   const onSubmit = async (data: UserLoginInput) => {
     // Handle login logic here
-    const user = await login({ loginData: data });
-    redirect('/');
+    try {
+      const response = await login({ loginData: data });
+      if (response.success) {
+        setToast({
+          text: 'Login successful!',
+          type: 'success',
+          status: 'block',
+        });
+        await revalidate();
+        router.refresh();
+        setTimeout(() => router.push('/'), 100);
+      }
+    } catch (error) {
+      setToast({
+        text: error instanceof Error ? error.message : 'Login failed',
+        type: 'error',
+        status: 'block',
+      });
+    }
   };
 
   return (
@@ -73,6 +100,7 @@ function LoginPage() {
               </a>
             </div>
           </form>
+          <Toast text={toast.text} type={toast.type} status={toast.status} />
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { useAuth } from './useAuth';
 import { useEffect, useState } from 'react';
 
 function Avatar() {
-  const { user, loading } = useAuth();
+  const { user, loading, logout: handleLogout } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
 
@@ -98,9 +98,9 @@ function Avatar() {
           {user ? (
             <a
               href="#"
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
-                logout();
+                await handleLogout();
               }}
             >
               Logout
