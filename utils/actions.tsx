@@ -21,6 +21,7 @@ import { writeFile } from 'fs/promises';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 // Get environment variables with validation
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -42,18 +43,23 @@ const prisma = new PrismaClient();
 
 export const findCustomers = async (search: string) => {
   if (!search) {
-    return '';
+    return [];
   }
-  const searchResults = await prisma.customer.findMany({
-    where: {
-      name: {
-        contains: search,
-        mode: 'insensitive',
+  try {
+    const searchResults = await prisma.customer.findMany({
+      where: {
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
       },
-    },
-    take: 5,
-  });
-  return searchResults;
+      take: 5,
+    });
+    return searchResults;
+  } catch (error) {
+    console.log(`Customer search error: ${error}`);
+    return [];
+  }
 };
 
 export const fetchAllCustomers = async () => {
@@ -66,10 +72,19 @@ export const createCustomer = async ({
 }: {
   customerData: CustomerData;
 }) => {
-  const checkDuplicate = await findCustomers(customerData.name);
+  const checkDuplicate = (await findCustomers(customerData.name)) || [];
   if (checkDuplicate.length > 0) {
-    throw new Error('Customer already exist');
+    throw new Error('Customer already exists');
   }
+
+  // Validate that the country value is a valid enum value
+  const validCountry = (Object.values(Country) as string[]).includes(
+    customerData.country
+  );
+  if (!validCountry) {
+    throw new Error('Invalid country selection');
+  }
+
   const newCustomer = await prisma.customer.create({
     data: {
       id: generateTimeBasedId(),
@@ -78,9 +93,11 @@ export const createCustomer = async ({
       address: customerData.address,
       phone: customerData.phone,
       city: customerData.city,
-      country: customerData.country,
+      country: customerData.country as Country,
     },
   });
+
+  return newCustomer;
 };
 
 export const createSeafreightBooking = async ({
@@ -131,11 +148,14 @@ export const createSeafreightBooking = async ({
   }
 };
 
+const BUCKET_NAME = 'user-images';
+const UPLOAD_FOLDER = '144gyii_1';
+
 export const uploadImage = async (file: File): Promise<string> => {
   try {
     const validatedFile = ImageSchema.shape.file.parse(file);
     const fileExt = validatedFile.name.split('.').pop();
-    const fileName = `${Date.now()}_${Math.random()
+    const fileName = `${UPLOAD_FOLDER}/${Date.now()}_${Math.random()
       .toString(36)
       .substring(7)}.${fileExt}`;
 
@@ -146,10 +166,11 @@ export const uploadImage = async (file: File): Promise<string> => {
     };
 
     const { data, error } = await supabase.storage
-      .from('user-images')
+      .from(BUCKET_NAME)
       .upload(fileName, validatedFile, options);
 
     if (error) {
+      console.error('Storage error:', error);
       throw new Error(`Failed to upload image: ${error.message}`);
     }
 
@@ -159,18 +180,13 @@ export const uploadImage = async (file: File): Promise<string> => {
 
     const {
       data: { publicUrl },
-    } = supabase.storage.from('user-images').getPublicUrl(fileName);
-
-    if (!publicUrl) {
-      throw new Error('Failed to get public URL for uploaded image');
-    }
+    } = supabase.storage.from(BUCKET_NAME).getPublicUrl(fileName);
 
     return publicUrl;
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Image upload failed: ${error.message}`);
-    }
-    throw new Error('Image upload failed with unknown error');
+    console.error('Upload error:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Image upload failed: ${message}`);
   }
 };
 
@@ -330,3 +346,11 @@ export const getUserData = async () => {
     return null;
   }
 };
+
+export async function protectRoute() {
+  const user = (await getUserData()) || null;
+  if (!user) {
+    redirect('/login');
+  }
+  return;
+}

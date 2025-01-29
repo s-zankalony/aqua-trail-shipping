@@ -11,7 +11,6 @@ import {
 import { Country } from '@prisma/client';
 import { createUser } from '@/utils/actions';
 import Toast from '@/components/Toast';
-import { redirect } from 'next/navigation';
 import { useAuth } from '@/components/useAuth';
 import { z } from 'zod';
 

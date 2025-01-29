@@ -2,6 +2,13 @@
 import Toast from '@/components/Toast';
 import { createCustomer } from '@/utils/actions';
 import { useState } from 'react';
+import { Country } from '@prisma/client';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  CustomerCreationSchema,
+  type CustomerCreationInput,
+} from '@/utils/zodSchemas';
 
 function CreateCustomerPage() {
   const [toast, setToast] = useState({
@@ -9,29 +16,26 @@ function CreateCustomerPage() {
     type: '',
     status: 'hidden',
   });
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    country: '',
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CustomerCreationInput>({
+    resolver: zodResolver(CustomerCreationSchema),
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: CustomerCreationInput) => {
     try {
-      await createCustomer({ customerData: formData });
-      console.log('Customer created successfully!');
+      await createCustomer({ customerData: data });
       setToast({
         text: 'Customer created successfully!',
         type: 'alert-success',
         status: 'block',
       });
     } catch (error) {
-      console.log(error);
       setToast({
-        text: error as string,
+        text: error instanceof Error ? error.message : 'An error occurred',
         type: 'alert-error',
         status: 'block',
       });
@@ -41,18 +45,20 @@ function CreateCustomerPage() {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6">Create New Customer</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="form-control">
           <label className="label">
             <span className="label-text">Name</span>
           </label>
           <input
+            {...register('name')}
             type="text"
             placeholder="Name"
             className="input input-bordered w-full"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
+          {errors.name && (
+            <span className="text-error">{errors.name.message}</span>
+          )}
         </div>
 
         <div className="form-control">
@@ -60,14 +66,14 @@ function CreateCustomerPage() {
             <span className="label-text">Email</span>
           </label>
           <input
+            {...register('email')}
             type="email"
             placeholder="Email"
             className="input input-bordered w-full"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
           />
+          {errors.email && (
+            <span className="text-error">{errors.email.message}</span>
+          )}
         </div>
 
         <div className="form-control">
@@ -75,14 +81,14 @@ function CreateCustomerPage() {
             <span className="label-text">Phone</span>
           </label>
           <input
+            {...register('phone')}
             type="tel"
             placeholder="Phone"
             className="input input-bordered w-full"
-            value={formData.phone}
-            onChange={(e) =>
-              setFormData({ ...formData, phone: e.target.value })
-            }
           />
+          {errors.phone && (
+            <span className="text-error">{errors.phone.message}</span>
+          )}
         </div>
 
         <div className="form-control">
@@ -90,14 +96,14 @@ function CreateCustomerPage() {
             <span className="label-text">Address</span>
           </label>
           <input
+            {...register('address')}
             type="text"
             placeholder="Address"
             className="input input-bordered w-full"
-            value={formData.address}
-            onChange={(e) =>
-              setFormData({ ...formData, address: e.target.value })
-            }
           />
+          {errors.address && (
+            <span className="text-error">{errors.address.message}</span>
+          )}
         </div>
 
         <div className="form-control">
@@ -105,27 +111,34 @@ function CreateCustomerPage() {
             <span className="label-text">City</span>
           </label>
           <input
+            {...register('city')}
             type="text"
             placeholder="City"
             className="input input-bordered w-full"
-            value={formData.city}
-            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
           />
+          {errors.city && (
+            <span className="text-error">{errors.city.message}</span>
+          )}
         </div>
 
         <div className="form-control">
           <label className="label">
             <span className="label-text">Country</span>
           </label>
-          <input
-            type="text"
-            placeholder="Country"
-            className="input input-bordered w-full"
-            value={formData.country}
-            onChange={(e) =>
-              setFormData({ ...formData, country: e.target.value })
-            }
-          />
+          <select
+            {...register('country')}
+            className="select select-bordered w-full"
+          >
+            <option value="">Select a country</option>
+            {Object.values(Country).map((country) => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
+          </select>
+          {errors.country && (
+            <span className="text-error">{errors.country.message}</span>
+          )}
         </div>
 
         <button type="submit" className="btn btn-primary w-full mt-6">

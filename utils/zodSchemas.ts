@@ -25,8 +25,8 @@ export const SeafreightBookingSchema = z
     overLength: z.string().optional(),
     overWidth: z.string().optional(),
     overHeight: z.string().optional(),
-    origin: z.string().min(1, 'Origin is required'),
-    destination: z.string().min(1, 'Destination is required'),
+    origin: z.nativeEnum(Country),
+    destination: z.nativeEnum(Country),
     pol: z.string().min(1, 'Port of Loading is required'),
     pod: z.string().min(1, 'Port of Discharge is required'),
     etd: z.date({ required_error: 'ETD is required' }),
@@ -130,3 +130,15 @@ export const UserLoginSchema = z.object({
 });
 
 export type UserLoginInput = z.infer<typeof UserLoginSchema>;
+
+export const CustomerCreationSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email'),
+  phone: z.string().min(1, 'Phone is required'),
+  address: z.string().min(1, 'Address is required'),
+  city: z.string().min(1, 'City is required'),
+  country: z.nativeEnum(Country, {
+    errorMap: () => ({ message: 'Country is required' }),
+  }),
+});
+export type CustomerCreationInput = z.infer<typeof CustomerCreationSchema>;
