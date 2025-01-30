@@ -194,8 +194,14 @@ export async function retrievePhoto({ user }: { user: UserDataNoPassword }) {
   if (!user?.image) return null;
 
   try {
-    const fileName = user.image.split('/').pop();
-    if (!fileName) {
+    // const fileName = user.image.split('/').pop();
+    // if (!fileName) {
+    //   return null;
+    // }
+
+    // Extract the key after 'user-images/' from the full URL
+    const key = user.image.split('user-images/')[1];
+    if (!key) {
       return null;
     }
 
@@ -205,7 +211,7 @@ export async function retrievePhoto({ user }: { user: UserDataNoPassword }) {
 
     const { data: signedData } = await supabase.storage
       .from('user-images')
-      .createSignedUrl(fileName, 3600);
+      .createSignedUrl(key, 3600);
 
     if (signedData?.signedUrl) {
       return signedData.signedUrl;
@@ -213,7 +219,7 @@ export async function retrievePhoto({ user }: { user: UserDataNoPassword }) {
 
     const {
       data: { publicUrl },
-    } = supabase.storage.from('user-images').getPublicUrl(fileName);
+    } = supabase.storage.from('user-images').getPublicUrl(key);
 
     if (publicUrl) {
       return publicUrl;
