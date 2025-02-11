@@ -4,6 +4,8 @@ import { BookingData } from '@/utils/types';
 import { redirect } from 'next/navigation';
 import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import Toast from './Toast';
+import { Country } from '@prisma/client';
+import { getUserId } from '@/utils/actions';
 
 function SeaFreightBooking() {
   const [toast, setToast] = useState({
@@ -36,7 +38,7 @@ function SeaFreightBooking() {
     searchResults(search);
   }, [search]);
 
-  const [formData, setFormData] = useState<BookingData>({
+  const initialFormState: BookingData = {
     customerId: '',
     customerName: '',
     containerType: '',
@@ -52,7 +54,9 @@ function SeaFreightBooking() {
     pol: '',
     pod: '',
     etd: new Date(),
-  });
+  };
+
+  const [formData, setFormData] = useState<BookingData>(initialFormState);
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -82,16 +86,27 @@ function SeaFreightBooking() {
     }
   };
 
+  const resetForm = () => {
+    setFormData(initialFormState);
+    setSearch('');
+    setFilteredCustomers([]);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle form submission
     try {
-      await createSeafreightBooking({ bookingData: formData });
+      const userId = await getUserId();
+      if (!userId) {
+        redirect('/login');
+      }
+      const booking = await createSeafreightBooking({ bookingData: formData });
       setToast({
-        text: 'Booking created successfully',
+        text: `Booking created successfully, your booking no. <strong style="font-size: 1.2em">${booking.id}</strong>`,
         type: 'success',
         status: 'block',
       });
+      resetForm();
     } catch (error) {
       setToast({
         type: 'error',
@@ -454,32 +469,42 @@ function SeaFreightBooking() {
 
           <div className="form-control w-full">
             <label className="label">
-              <span className="label-text">Origin</span>
+              <span className="label-text">Origin Country</span>
             </label>
-            <input
-              type="text"
+            <select
               name="origin"
               value={formData.origin}
               onChange={handleChange}
-              placeholder="Enter origin"
               required
-              className="input input-bordered w-full"
-            />
+              className="select select-bordered w-full"
+            >
+              <option value="">Select origin country</option>
+              {Object.values(Country).map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-control w-full">
             <label className="label">
-              <span className="label-text">Destination</span>
+              <span className="label-text">Destination Country</span>
             </label>
-            <input
-              type="text"
+            <select
               name="destination"
               value={formData.destination}
               onChange={handleChange}
-              placeholder="Enter destination"
               required
-              className="input input-bordered w-full"
-            />
+              className="select select-bordered w-full"
+            >
+              <option value="">Select destination country</option>
+              {Object.values(Country).map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-control w-full">

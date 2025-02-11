@@ -145,7 +145,7 @@ function CreateCustomerPage() {
           Create Customer
         </button>
       </form>
-      <Toast text={toast.text} type={toast.type} status={toast.status} />;
+      <Toast text={toast.text} type={toast.type} status={toast.status} />
     </div>
   );
 }

@@ -17,8 +17,6 @@ import { z } from 'zod';
 import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
-import { writeFile } from 'fs/promises';
-import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -140,6 +138,7 @@ export const createSeafreightBooking = async ({
         etd: validatedData.etd,
       },
     });
+    return newSeafreightBooking;
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new Error(error.errors.map((e) => e.message).join(', '));
