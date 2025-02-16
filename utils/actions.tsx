@@ -18,7 +18,6 @@ import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { createClient } from '@supabase/supabase-js';
-import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 // Get environment variables with validation
@@ -301,7 +300,6 @@ export const login = async ({ loginData }: { loginData: UserLoginInput }) => {
   });
 
   const { password: _, ...userWithoutPassword } = foundUser;
-
   return { success: true, user: userWithoutPassword };
 };
 
@@ -344,13 +342,63 @@ export const getUserData = async () => {
 
     if (!user) return null;
 
-    const { password: _, ...userWithoutPassword } = user;
+    const { password: _, ...userData } = user;
+    const userWithoutPassword = {
+      ...userData,
+      phone: userData.phone ?? undefined,
+      city: userData.city ?? undefined,
+      country: userData.country ?? undefined,
+      image: userData.image ?? undefined,
+    };
     return userWithoutPassword;
   } catch (error) {
     console.error('Get user data error:', error);
     return null;
   }
 };
+
+export const getUserDataById = async (userId: string) => {
+  try {
+    // Validate userId
+    if (!userId || typeof userId !== 'string') {
+      console.error('Invalid userId provided: ', userId);
+      return null;
+    }
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) return null;
+
+    const { password: _, ...userData } = user;
+    const userWithoutPassword = {
+      ...userData,
+      phone: userData.phone ?? undefined,
+      city: userData.city ?? undefined,
+      country: userData.country ?? undefined,
+      image: userData.image ?? undefined,
+    };
+    return userWithoutPassword;
+  } catch (error) {
+    console.error('Get user data error:', error);
+    return null;
+  }
+};
+
+export async function getUserBookings(userId: string) {
+  try {
+    const bookings = await prisma.seaFreightBooking.findMany({
+      where: { userId: userId },
+      include: {
+        shipper: true,
+      },
+    });
+    return bookings;
+  } catch (error) {
+    console.error('Get bookings data error: ', error);
+    return null;
+  }
+}
 
 export async function protectRoute() {
   const user = (await getUserData()) || null;

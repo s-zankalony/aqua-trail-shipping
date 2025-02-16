@@ -3,8 +3,10 @@ import ThemeSwitch from './ThemeSwitch';
 import logo from '@/public/images/aqua-trail-shipping.jpg';
 import { links } from '@/utils/links';
 import Avatar from './Avatar';
+import { getUserData } from '@/utils/actions';
 
-function Navbar() {
+async function Navbar() {
+  const user = await getUserData();
   return (
     <div className="navbar bg-base-100 menu menu-vertical md:menu-horizontal">
       <div className="flex-1 justify-start items-center">
@@ -56,7 +58,7 @@ function Navbar() {
         <div className="flex-none">
           <ThemeSwitch />
         </div>
-        <Avatar />
+        <Avatar key={user ? user.id : 'guest'} />
       </div>
     </div>
   );

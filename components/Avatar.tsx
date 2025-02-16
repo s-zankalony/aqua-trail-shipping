@@ -7,6 +7,14 @@ function Avatar() {
   const { user, loading, logout: handleLogout } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState(false);
+  const [renderTrigger, setRenderTrigger] = useState(0); // Add a render trigger
+
+  useEffect(() => {
+    // Force a re-render when the user object becomes available
+    if (user) {
+      setRenderTrigger((prev) => prev + 1);
+    }
+  }, [user]);
 
   useEffect(() => {
     let isMounted = true;
@@ -36,12 +44,13 @@ function Avatar() {
       }
     }
 
-    fetchAvatar();
-
+    if (user) {
+      fetchAvatar();
+    }
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [user, renderTrigger]);
 
   if (loading) {
     return (
@@ -85,15 +94,29 @@ function Avatar() {
         tabIndex={0}
         className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
       >
-        <li>
-          <a className="justify-between">
-            Profile
-            <span className="badge">New</span>
-          </a>
-        </li>
-        <li>
-          <a>Settings</a>
-        </li>
+        {user && (
+          <>
+            <li>
+              <a
+                href={`/profile/${user.id}/bookings`}
+                className="justify-between"
+              >
+                My Bookings
+              </a>
+            </li>
+            <li>
+              <a
+                href={`/profile/${user.id}/customers`}
+                className="justify-between"
+              >
+                My Customers
+              </a>
+            </li>
+            <li>
+              <a>Settings</a>
+            </li>
+          </>
+        )}
         <li>
           {user ? (
             <a

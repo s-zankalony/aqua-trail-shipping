@@ -68,6 +68,7 @@ export type UserData = {
 };
 
 export type UserDataNoPassword = {
+  id: string;
   name: string;
   email: string;
   phone?: string;
