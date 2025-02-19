@@ -64,11 +64,24 @@ export const fetchAllCustomers = async () => {
   return allCustomers;
 };
 
+export async function getCustomerById(customerId: string) {
+  try {
+    const booking = await prisma.customer.findUnique({
+      where: { id: customerId },
+    });
+    return booking;
+  } catch (error) {
+    console.error('Get customer data error: ', error);
+    return null;
+  }
+}
+
 export const createCustomer = async ({
   customerData,
 }: {
   customerData: CustomerData;
 }) => {
+  const userId = await getUserId();
   const checkDuplicate = (await findCustomers(customerData.name)) || [];
   if (checkDuplicate.length > 0) {
     throw new Error('Customer already exists');
@@ -91,6 +104,7 @@ export const createCustomer = async ({
       phone: customerData.phone,
       city: customerData.city,
       country: customerData.country as Country,
+      userId: userId,
     },
   });
 
@@ -394,6 +408,33 @@ export async function getUserBookings(userId: string) {
       },
     });
     return bookings;
+  } catch (error) {
+    console.error('Get bookings data error: ', error);
+    return null;
+  }
+}
+export async function getBookingById(bookingId: string) {
+  try {
+    const booking = await prisma.seaFreightBooking.findUnique({
+      where: { id: bookingId },
+      include: {
+        shipper: true,
+      },
+    });
+    // console.log(booking);
+    return booking;
+  } catch (error) {
+    console.error('Get booking data error: ', error);
+    return null;
+  }
+}
+
+export async function getUserCustomers(userId: string) {
+  try {
+    const customers = await prisma.customer.findMany({
+      where: { userId: userId },
+    });
+    return customers;
   } catch (error) {
     console.error('Get bookings data error: ', error);
     return null;

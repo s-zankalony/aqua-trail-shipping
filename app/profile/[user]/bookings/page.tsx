@@ -12,7 +12,7 @@ async function UserBookingsPage({ params }: { params: { user: string } }) {
 
   return (
     <>
-      <h1 className="text-3xl my-8">Hello, {userData?.name}</h1>
+      <h1 className="text-3xl my-8 p-4">Hello, {userData?.name}</h1>
       <h1 className="text-4xl mb-4 text-center font-bold">My Bookings</h1>
 
       <div className="overflow-x-auto">
@@ -88,7 +88,9 @@ async function UserBookingsPage({ params }: { params: { user: string } }) {
                   <td>{booking.etd.toLocaleDateString()}</td>
                   <td>{booking.createdAt.toLocaleDateString()}</td>
                   <th>
-                    <button className="btn btn-ghost btn-xs">details</button>
+                    <button className="btn btn-ghost btn-xs">
+                      <a href={`/bookingDetails/${booking.id}`}>details</a>
+                    </button>
                   </th>
                 </tr>
               );

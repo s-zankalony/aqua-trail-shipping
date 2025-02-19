@@ -6,11 +6,6 @@ import { redirect } from 'next/navigation';
 import { getUserData, protectRoute } from '@/utils/actions';
 
 async function BookingPage({ params }: { params: { service: string } }) {
-  // const user = (await getUserData()) || null;
-  // if (!user) {
-  //   redirect('/login');
-  // }
-
   await protectRoute();
 
   const { service } = await params;

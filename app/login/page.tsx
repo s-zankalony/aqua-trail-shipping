@@ -4,18 +4,33 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { UserLoginSchema, UserLoginInput } from '@/utils/zodSchemas';
 import { login } from '@/utils/actions';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Toast from '@/components/Toast';
 import { useAuth } from '@/components/useAuth';
 
 function LoginPage() {
   const router = useRouter();
   const { revalidate } = useAuth();
+  const [previousPath, setPreviousPath] = useState<string>('/');
   const [toast, setToast] = useState({
     text: '',
     type: '',
     status: 'hidden',
   });
+
+  useEffect(() => {
+    // Get the previous path from document referrer
+    const referrer = document.referrer;
+    // Check if referrer is from the same origin
+    if (referrer && referrer.startsWith(window.location.origin)) {
+      const path = new URL(referrer).pathname;
+      // Don't set login or register paths as previous path
+      if (path !== '/login' && path !== '/register') {
+        setPreviousPath(path);
+      }
+    }
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -34,7 +49,7 @@ function LoginPage() {
         });
         await revalidate();
         router.refresh();
-        setTimeout(() => router.push('/'), 100);
+        setTimeout(() => router.push(previousPath), 100);
       }
     } catch (error) {
       setToast({
