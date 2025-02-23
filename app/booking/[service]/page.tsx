@@ -2,8 +2,7 @@ import AirFreightBooking from '@/components/AirFreightBooking';
 import SeaFreightBooking from '@/components/SeaFreightBooking';
 import RoadTransportBooking from '@/components/RoadTransportBooking';
 import WarehousingBooking from '@/components/WarehousingBooking';
-import { redirect } from 'next/navigation';
-import { getUserData, protectRoute } from '@/utils/actions';
+import { protectRoute } from '@/utils/actions';
 
 async function BookingPage({ params }: { params: { service: string } }) {
   await protectRoute();

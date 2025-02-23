@@ -4,7 +4,7 @@ import { getUserBookings } from '@/utils/actions';
 async function UserBookingsPage({ params }: { params: { user: string } }) {
   await protectRoute();
 
-  const { user } = params;
+  const { user } = await params;
   // console.log(`Params: ${params}`);
   // console.log(`user Id: ${user}`);
   const userData = await getUserDataById(user);
@@ -39,6 +39,7 @@ async function UserBookingsPage({ params }: { params: { user: string } }) {
               <th>ETD</th>
               <th>Created</th>
               <th>More Details</th>
+              <th>Edit</th>
               <th></th>
             </tr>
           </thead>
@@ -62,7 +63,7 @@ async function UserBookingsPage({ params }: { params: { user: string } }) {
                   <td>
                     <input
                       type="checkbox"
-                      className="checkbox"
+                      className={`checkbox ${booking.dg && 'checkbox-error'}`}
                       checked={booking.dg}
                       disabled
                     />
@@ -70,7 +71,9 @@ async function UserBookingsPage({ params }: { params: { user: string } }) {
                   <td>
                     <input
                       type="checkbox"
-                      className="checkbox"
+                      className={`checkbox ${
+                        booking.reefer && 'checkbox-success'
+                      }`}
                       checked={booking.reefer}
                       disabled
                     />
@@ -78,7 +81,9 @@ async function UserBookingsPage({ params }: { params: { user: string } }) {
                   <td>
                     <input
                       type="checkbox"
-                      className="checkbox"
+                      className={`checkbox ${
+                        booking.oog && 'checkbox-warning'
+                      }`}
                       checked={booking.oog}
                       disabled
                     />
@@ -88,8 +93,13 @@ async function UserBookingsPage({ params }: { params: { user: string } }) {
                   <td>{booking.etd.toLocaleDateString()}</td>
                   <td>{booking.createdAt.toLocaleDateString()}</td>
                   <th>
-                    <button className="btn btn-ghost btn-xs">
+                    <button className="btn  btn-xs btn-info">
                       <a href={`/bookingDetails/${booking.id}`}>details</a>
+                    </button>
+                  </th>
+                  <th>
+                    <button className="btn  btn-xs btn-warning">
+                      <a href={`/bookingDetails/${booking.id}/edit`}>edit</a>
                     </button>
                   </th>
                 </tr>
@@ -114,6 +124,7 @@ async function UserBookingsPage({ params }: { params: { user: string } }) {
               <th>ETD</th>
               <th>Created</th>
               <th>More Details</th>
+              <th>Edit</th>
               <th></th>
             </tr>
           </tfoot>

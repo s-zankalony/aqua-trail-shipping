@@ -27,5 +27,25 @@
     "Tokelau",
     "XVCJ",
     "yaqcmueioqlzuufulwrc"
-  ]
+  ],
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#cecac2",
+    "activityBar.background": "#cecac2",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#308f70",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#cecac2",
+    "statusBar.background": "#b8b1a5",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#a29888",
+    "statusBarItem.remoteBackground": "#b8b1a5",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#b8b1a5",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#b8b1a599",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#b8b1a5"
 }

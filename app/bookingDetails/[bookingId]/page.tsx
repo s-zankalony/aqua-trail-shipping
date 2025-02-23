@@ -201,7 +201,7 @@ async function BookingDetailsPage({
           </div>
 
           {/* Actions */}
-          <BookingActions />
+          <BookingActions bookingId={booking.id} />
         </div>
       </div>
     </div>
