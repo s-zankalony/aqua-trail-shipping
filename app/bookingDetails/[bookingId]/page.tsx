@@ -1,4 +1,4 @@
-import { getBookingById, protectRoute } from '@/utils/actions';
+import { getBookingById, getUserData, protectRoute } from '@/utils/actions';
 import BookingActions from '@/components/BookingActions';
 
 async function BookingDetailsPage({
@@ -9,6 +9,7 @@ async function BookingDetailsPage({
   await protectRoute();
   const { bookingId } = params;
   const booking = await getBookingById(bookingId);
+  const user = await getUserData();
 
   if (!booking) {
     return (
@@ -201,7 +202,7 @@ async function BookingDetailsPage({
           </div>
 
           {/* Actions */}
-          <BookingActions bookingId={booking.id} />
+          {user && <BookingActions bookingId={booking.id} userId={user.id} />}
         </div>
       </div>
     </div>

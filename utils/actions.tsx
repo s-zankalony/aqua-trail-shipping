@@ -160,6 +160,78 @@ export const createSeafreightBooking = async ({
   }
 };
 
+export const updateSeafreightBooking = async ({
+  bookingId,
+  bookingData,
+}: {
+  bookingId: string;
+  bookingData: BookingData;
+}) => {
+  try {
+    // Validate the input data
+    const validatedData = validateSeafreightBooking(bookingData);
+
+    // Get current user ID
+    const userId = await getUserId();
+
+    // Check if booking exists and belongs to user
+    const existingBooking = await prisma.seaFreightBooking.findUnique({
+      where: { id: bookingId },
+    });
+
+    if (!existingBooking) {
+      throw new Error('Booking not found');
+    }
+
+    if (existingBooking.userId !== userId) {
+      throw new Error('Not authorized to update this booking');
+    }
+
+    // Update the booking
+    const updatedBooking = await prisma.seaFreightBooking.update({
+      where: { id: bookingId },
+      data: {
+        customerId: validatedData.customerId,
+        containerSize: validatedData.containerSize,
+        containerType: validatedData.containerType,
+        containerQuantity: validatedData.containerQuantity,
+        commodity: validatedData.commodity,
+        weight: validatedData.weight,
+        dg: validatedData.dg,
+        unNumber: validatedData.unNumber || '',
+        class: validatedData.class || '',
+        packingGroup: validatedData.packingGroup || '',
+        flashPoint: validatedData.flashPoint || '',
+        marinePollutant: validatedData.marinePollutant || false,
+        reefer: validatedData.reefer,
+        temperature: validatedData.temperature || '',
+        ventilation: validatedData.ventilation || '',
+        humidity: validatedData.humidity || '',
+        oog: validatedData.oog,
+        overLength: validatedData.overLength || '',
+        overWidth: validatedData.overWidth || '',
+        overHeight: validatedData.overHeight || '',
+        origin: validatedData.origin,
+        destination: validatedData.destination,
+        pol: validatedData.pol,
+        pod: validatedData.pod,
+        etd: validatedData.etd,
+        updatedAt: new Date(),
+      },
+      include: {
+        shipper: true,
+      },
+    });
+
+    return updatedBooking;
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw new Error(error.errors.map((e) => e.message).join(', '));
+    }
+    throw error;
+  }
+};
+
 const BUCKET_NAME = 'user-images';
 const UPLOAD_FOLDER = '144gyii_1';
 

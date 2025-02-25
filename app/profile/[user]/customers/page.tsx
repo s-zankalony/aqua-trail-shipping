@@ -8,7 +8,9 @@ import AddCustomerButton from '@/components/AddCustomerButton';
 
 async function UserCustomersPage({ params }: { params: { user: string } }) {
   await protectRoute();
-  const { user } = params;
+
+  const user = params.user;
+
   const userData = await getUserDataById(user);
   if (!userData) {
     throw new Error('User not found');
