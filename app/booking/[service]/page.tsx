@@ -7,7 +7,7 @@ import { protectRoute } from '@/utils/actions';
 async function BookingPage({ params }: { params: { service: string } }) {
   await protectRoute();
 
-  const { service } = await params;
+  const service = params.service;
   const renderBookingComponent = () => {
     switch (service) {
       case 'airfreight':

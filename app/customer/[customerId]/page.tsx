@@ -101,7 +101,10 @@ async function CustomerDetailsPage({
             </div>
           </div>
 
-          <CustomerPrintAction />
+          <CustomerPrintAction
+            userId={customer.userId}
+            customerId={customer.id}
+          />
         </div>
       </div>
     </div>

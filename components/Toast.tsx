@@ -7,12 +7,33 @@ function Toast({
   type: string;
   status: string;
 }) {
+  // Normalize type to ensure it works with DaisyUI alert classes
+  let alertType = type;
+  if (!type.startsWith('alert-')) {
+    switch (type) {
+      case 'success':
+        alertType = 'alert-success';
+        break;
+      case 'error':
+        alertType = 'alert-error';
+        break;
+      case 'warning':
+        alertType = 'alert-warning';
+        break;
+      case 'info':
+        alertType = 'alert-info';
+        break;
+      default:
+        alertType = 'alert-info';
+    }
+  }
+
   return (
     <div
       role="alert"
       className={`${
         status === 'hidden' ? 'hidden' : 'block'
-      } alert alert-${type} mt-8`}
+      } alert ${alertType} mt-8`}
     >
       {/* <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +48,7 @@ function Toast({
           d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
         />
       </svg> */}
-      <span>{text}</span>
+      <span dangerouslySetInnerHTML={{ __html: text }}></span>
     </div>
   );
 }

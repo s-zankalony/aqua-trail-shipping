@@ -66,7 +66,7 @@ const BookingEditForm: React.FC<BookingEditFormProps> = ({
       setFormData((prev) => ({
         ...prev,
         customerName: customer.name,
-        customerId: customer.id,
+        customerId: customer.id ?? '', // Add default empty string if id is undefined
       }));
     }
   }, [customer]);
@@ -187,7 +187,7 @@ const BookingEditForm: React.FC<BookingEditFormProps> = ({
                             onClick={() => {
                               setFormData({
                                 ...formData,
-                                customerId: c.id,
+                                customerId: c.id ?? '', // Add default empty string if id is undefined
                                 customerName: c.name,
                               });
                               setSearch(c.name);

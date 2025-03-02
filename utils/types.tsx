@@ -16,9 +16,11 @@ export type Customer = {
   country: string;
   createdAt: Date;
   updatedAt: Date;
+  userId?: string;
 };
+
 export type CustomerData = {
-  id: string;
+  id?: string;
   name: string;
   email: string;
   phone: string;

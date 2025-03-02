@@ -111,6 +111,44 @@ export const createCustomer = async ({
   return newCustomer;
 };
 
+export const updateCustomer = async ({
+  customerData,
+}: {
+  customerData: CustomerData;
+}) => {
+  const userId = await getUserId();
+  if (!customerData.id) {
+    throw new Error('Customer ID is required');
+  }
+  const checkCustomerExistence = await getCustomerById(customerData.id);
+  if (!checkCustomerExistence) {
+    throw new Error("Customer doesn't exists");
+  }
+
+  // Validate that the country value is a valid enum value
+  const validCountry = (Object.values(Country) as string[]).includes(
+    customerData.country
+  );
+  if (!validCountry) {
+    throw new Error('Invalid country selection');
+  }
+
+  const newCustomer = await prisma.customer.update({
+    where: { id: customerData.id },
+    data: {
+      name: customerData.name,
+      email: customerData.email,
+      address: customerData.address,
+      phone: customerData.phone,
+      city: customerData.city,
+      country: customerData.country as Country,
+      userId: userId,
+    },
+  });
+
+  return newCustomer;
+};
+
 export const createSeafreightBooking = async ({
   bookingData,
 }: {

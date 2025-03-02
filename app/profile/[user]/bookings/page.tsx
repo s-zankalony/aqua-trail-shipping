@@ -4,7 +4,7 @@ import { getUserBookings } from '@/utils/actions';
 async function UserBookingsPage({ params }: { params: { user: string } }) {
   await protectRoute();
 
-  const { user } = await params;
+  const user = params.user;
   // console.log(`Params: ${params}`);
   // console.log(`user Id: ${user}`);
   const userData = await getUserDataById(user);

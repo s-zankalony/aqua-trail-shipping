@@ -27,16 +27,21 @@ function CreateCustomerPage() {
 
   const onSubmit = async (data: CustomerCreationInput) => {
     try {
-      await createCustomer({ customerData: data });
+      // The customerData object matches CustomerData type with optional id
+      await createCustomer({
+        customerData: {
+          ...data,
+        },
+      });
       setToast({
         text: 'Customer created successfully!',
-        type: 'alert-success',
+        type: 'success',
         status: 'block',
       });
     } catch (error) {
       setToast({
         text: error instanceof Error ? error.message : 'An error occurred',
-        type: 'alert-error',
+        type: 'error',
         status: 'block',
       });
     }

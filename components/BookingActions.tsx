@@ -2,10 +2,9 @@
 
 type BookingActionsProps = {
   bookingId: string;
-  userId: string;
 };
 
-function BookingActions({ bookingId, userId }: BookingActionsProps) {
+function BookingActions({ bookingId }: BookingActionsProps) {
   return (
     <div className="card-actions justify-end mt-6">
       <button className="btn btn-primary" onClick={() => window.print()}>
@@ -14,8 +13,8 @@ function BookingActions({ bookingId, userId }: BookingActionsProps) {
       <button className="btn  btn-warning">
         <a href={`/bookingDetails/${bookingId}/edit`}>Edit</a>
       </button>
-      <button className="btn">
-        <a href={`/profile/${userId}/bookings`}>Back</a>
+      <button className="btn" onClick={() => window.history.back()}>
+        Back
       </button>
     </div>
   );

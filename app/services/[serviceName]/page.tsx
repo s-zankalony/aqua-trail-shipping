@@ -9,8 +9,8 @@ type Props = {
 };
 
 async function ServicePage({ params }: Props) {
-  const searchParam = await params;
-  const service = services.find((s) => s.page === searchParam.serviceName);
+  const searchParam = params.serviceName;
+  const service = services.find((s) => s.page === searchParam);
   if (!service) {
     notFound();
   }
