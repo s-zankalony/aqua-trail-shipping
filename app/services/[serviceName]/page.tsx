@@ -1,23 +1,20 @@
+'use client';
 import { services } from '@/utils/services';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import LinkButton from '@/components/LinkButton';
 
-type Props = {
-  params: {
-    serviceName: string;
-  };
-};
+function ServicePage() {
+  const params = useParams();
 
-async function ServicePage({ params }: Props) {
   const searchParam = params.serviceName;
   const service = services.find((s) => s.page === searchParam);
   if (!service) {
     notFound();
   }
 
-  const handleBooking = () => {
-    window.location.href = `/booking/${service.page}`;
-  };
+  // const handleBooking = () => {
+  //   window.location.href = `/booking/${service.page}`;
+  // };
 
   return (
     <div className="flex flex-col gap-4 bg-base-100 p-8 m-16 items-center">
@@ -51,9 +48,3 @@ async function ServicePage({ params }: Props) {
   );
 }
 export default ServicePage;
-
-export function generateStaticParams() {
-  return services.map((service) => ({
-    serviceName: service.page,
-  }));
-}

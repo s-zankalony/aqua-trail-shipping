@@ -1,12 +1,12 @@
 'use client';
 import CountUp from 'react-countup';
-import { useInView } from 'react-intersection-observer';
+// import { useInView } from 'react-intersection-observer';
 
 function StatsComponent() {
-  const { ref, inView } = useInView({
-    threshold: 0.3,
-    triggerOnce: true,
-  });
+  // const { ref, inView } = useInView({
+  //   threshold: 0.3,
+  //   triggerOnce: true,
+  // });
   return (
     <div className="stats stats-vertical m-auto lg:stats-horizontal shadow">
       <div className="stat">

@@ -1,6 +1,3 @@
-import heroImage from '@/public/images/hero.jpeg';
-import Image from 'next/image';
-
 function Hero() {
   return (
     <div

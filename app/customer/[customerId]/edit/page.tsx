@@ -11,7 +11,7 @@ import {
   CustomerCreationSchema,
   type CustomerCreationInput,
 } from '@/utils/zodSchemas';
-import { Customer } from '@/utils/types';
+import { Customer } from '@/types';
 
 function CustomerEditPage() {
   const router = useRouter();

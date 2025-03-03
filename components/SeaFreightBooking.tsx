@@ -1,6 +1,6 @@
 'use client';
 import { findCustomers, createSeafreightBooking } from '@/utils/actions';
-import { BookingData } from '@/utils/types';
+import { BookingData } from '@/types';
 import { redirect } from 'next/navigation';
 import { useState, FormEvent, ChangeEvent, useEffect } from 'react';
 import Toast from './Toast';

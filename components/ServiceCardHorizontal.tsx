@@ -1,5 +1,4 @@
-import { ServiceCardType } from '@/utils/types';
-import Link from 'next/link';
+import { ServiceCardType } from '@/types';
 import LinkButton from './LinkButton';
 
 function ServiceCardHorizontal({ service }: { service: ServiceCardType }) {
@@ -10,7 +9,7 @@ function ServiceCardHorizontal({ service }: { service: ServiceCardType }) {
 
   `;
   return (
-    <div className="card lg:card-side bg-base-100 shadow-xl my-4">
+    <div className="card lg:card-side bg-base-100 shadow-xl my-4" id={id}>
       <figure>
         <img src={img} alt={title} />
       </figure>

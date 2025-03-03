@@ -1,14 +1,39 @@
+'use client';
 import CustomerPrintAction from '@/components/CustomerPrintAction';
 import { getCustomerById, protectRoute } from '@/utils/actions';
+import { useEffect, useState } from 'react';
+import type { Customer } from '@/types';
+import { useParams } from 'next/navigation';
 
-async function CustomerDetailsPage({
-  params,
-}: {
-  params: { customerId: string };
-}) {
-  await protectRoute();
+function CustomerDetailsPage() {
+  useEffect(() => {
+    const checkAuth = async () => {
+      await protectRoute();
+    };
+
+    checkAuth();
+  }, []);
+
+  const params = useParams();
   const { customerId } = params;
-  const customer = await getCustomerById(customerId);
+  const customerId_str =
+    typeof customerId === 'string'
+      ? customerId
+      : Array.isArray(customerId)
+      ? customerId[0]
+      : '';
+  const [customer, setCustomer] = useState<Customer | null>(null);
+
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      if (customerId_str) {
+        const data = await getCustomerById(customerId_str);
+        setCustomer(data);
+      }
+    };
+
+    fetchCustomer();
+  }, [customerId_str]);
 
   if (!customer) {
     return (
@@ -102,7 +127,7 @@ async function CustomerDetailsPage({
           </div>
 
           <CustomerPrintAction
-            userId={customer.userId}
+            userId={customer.userId || ''}
             customerId={customer.id}
           />
         </div>

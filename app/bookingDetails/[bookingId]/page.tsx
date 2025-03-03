@@ -1,15 +1,38 @@
+'use client';
 import { getBookingById, getUserData, protectRoute } from '@/utils/actions';
 import BookingActions from '@/components/BookingActions';
+import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { Booking, User } from '@/types';
 
-async function BookingDetailsPage({
-  params,
-}: {
-  params: { bookingId: string };
-}) {
-  await protectRoute();
+function BookingDetailsPage() {
+  useEffect(() => {
+    const checkAuth = async () => {
+      await protectRoute();
+    };
+    checkAuth();
+  }, []);
+  const params = useParams();
   const { bookingId } = params;
-  const booking = await getBookingById(bookingId);
-  const user = await getUserData();
+  const [booking, setBooking] = useState<Booking | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (typeof bookingId === 'string') {
+          const bookingData = await getBookingById(bookingId);
+          const userData = await getUserData();
+          setBooking(bookingData);
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [bookingId]);
 
   if (!booking) {
     return (

@@ -4,6 +4,7 @@ import logo from '@/public/images/aqua-trail-shipping.jpg';
 import { links } from '@/utils/links';
 import Avatar from './Avatar';
 import { getUserData } from '@/utils/actions';
+import Link from 'next/link';
 
 async function Navbar() {
   const user = await getUserData();
@@ -35,9 +36,9 @@ async function Navbar() {
             height={48}
             className="rounded-full"
           />
-          <a className="btn btn-ghost text-xl" href="/">
+          <Link className="btn btn-ghost text-xl" href="/">
             Aqua Trail Company
-          </a>
+          </Link>
         </div>
       </div>
       <div className="flex-none gap-2">
@@ -47,9 +48,9 @@ async function Navbar() {
               const { id, name, dest } = link;
               return (
                 <li key={id}>
-                  <a href={dest} className="link link-hover">
+                  <Link href={dest} className="link link-hover">
                     {name}
-                  </a>
+                  </Link>
                 </li>
               );
             })}

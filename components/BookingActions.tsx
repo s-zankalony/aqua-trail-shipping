@@ -2,6 +2,7 @@
 
 type BookingActionsProps = {
   bookingId: string;
+  userId?: string;
 };
 
 function BookingActions({ bookingId }: BookingActionsProps) {

@@ -1,14 +1,100 @@
+'use client';
+
 import { getUserDataById, protectRoute } from '@/utils/actions';
 import { getUserBookings } from '@/utils/actions';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Country, ContainerSize, ContainerType } from '@prisma/client';
 
-async function UserBookingsPage({ params }: { params: { user: string } }) {
-  await protectRoute();
+type UserData = {
+  phone?: string;
+  city?: string;
+  country?: Country | null;
+  image?: string;
+  name: string;
+  id: string;
+  email: string;
+  active: boolean;
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
+} | null;
 
-  const user = params.user;
-  // console.log(`Params: ${params}`);
-  // console.log(`user Id: ${user}`);
-  const userData = await getUserDataById(user);
-  const bookings = await getUserBookings(user);
+type Customer = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  country: Country;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+};
+
+type Booking = {
+  id: string;
+  userId: string;
+  customerId: string;
+  containerSize: ContainerSize;
+  containerType: ContainerType;
+  containerQuantity: number;
+  commodity: string;
+  weight: number;
+  dg: boolean;
+  unNumber: string | null;
+  class: string | null;
+  packingGroup: string | null;
+  flashPoint: string | null;
+  marinePollutant: boolean | null;
+  reefer: boolean;
+  temperature: string | null;
+  ventilation: string | null;
+  humidity: string | null;
+  oog: boolean;
+  overLength: string | null;
+  overWidth: string | null;
+  overHeight: string | null;
+  origin: Country;
+  destination: Country;
+  pol: string;
+  pod: string;
+  etd: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  shipper: Customer;
+};
+
+function UserBookingsPage() {
+  useEffect(() => {
+    const checkAuth = async () => {
+      await protectRoute();
+    };
+
+    checkAuth();
+  }, []);
+  const params = useParams();
+  const user = params.user as string;
+
+  const [userData, setUserData] = useState<UserData>(null);
+  const [bookings, setBookings] = useState<Booking[] | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await getUserDataById(user);
+        const bookings = await getUserBookings(user);
+
+        setUserData(userData);
+        setBookings(bookings as Booking[] | null);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [user]);
 
   return (
     <>

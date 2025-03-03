@@ -9,7 +9,7 @@ import React, {
   useCallback,
 } from 'react';
 import { findCustomers, updateSeafreightBooking } from '@/utils/actions';
-import { BookingData, CustomerData } from '@/utils/types';
+import { BookingData, CustomerData } from '@/types';
 import { redirect } from 'next/navigation';
 import Toast from '@/components/Toast';
 import { Country } from '@prisma/client';
@@ -140,6 +140,7 @@ const BookingEditForm: React.FC<BookingEditFormProps> = ({
         router.push(`/bookingDetails/${bookingId}`);
         router.refresh();
       }, 1500);
+      return updatedBooking;
     } catch (error) {
       setToast({
         type: 'error',

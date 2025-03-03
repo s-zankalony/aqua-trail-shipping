@@ -1,11 +1,10 @@
-import Link from 'next/link';
-import { ServiceCardType } from '../utils/types';
+import { ServiceCardType } from '../types';
 import LinkButton from './LinkButton';
 
 function ServiceCard({ service }: { service: ServiceCardType }) {
   const { id, title, img, desc, page } = service;
   return (
-    <div className="card bg-base-100 w-96 shadow-xl p-4">
+    <div className="card bg-base-100 w-96 shadow-xl p-4" id={id}>
       <figure>
         <img src={img} alt={title} />
       </figure>

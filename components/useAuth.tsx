@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getUserData, logout } from '@/utils/actions';
-import type { UserDataNoPassword } from '@/utils/types';
+import type { UserDataNoPassword } from '@/types';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 

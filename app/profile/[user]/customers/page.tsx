@@ -1,3 +1,4 @@
+'use client';
 import {
   getUserCustomers,
   getUserDataById,
@@ -5,18 +6,74 @@ import {
 } from '@/utils/actions';
 import CustomerActions from '@/components/CustomerActions';
 import AddCustomerButton from '@/components/AddCustomerButton';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Country } from '@prisma/client';
 
-async function UserCustomersPage({ params }: { params: { user: string } }) {
-  await protectRoute();
+// Define proper types
+type Customer = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  country: Country;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+};
 
-  const user = params.user;
+type UserData = {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  city?: string;
+  country?: Country | null;
+  image?: string;
+  active: boolean;
+  role: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
-  const userData = await getUserDataById(user);
-  if (!userData) {
-    throw new Error('User not found');
-  }
-  const { name } = userData;
-  const customers = await getUserCustomers(user);
+function UserCustomersPage() {
+  useEffect(() => {
+    const checkAuth = async () => {
+      await protectRoute();
+    };
+
+    checkAuth();
+  }, []);
+
+  const params = useParams();
+  const user = params.user as string;
+
+  // Remove unused userData state and use proper type for customers
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = (await getUserDataById(user)) as UserData | null;
+        if (!data) {
+          throw new Error('User not found');
+        }
+        setName(data.name);
+
+        const userCustomers = (await getUserCustomers(user)) as
+          | Customer[]
+          | null;
+        setCustomers(userCustomers || []);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
 
   return (
     <div className="container mx-auto p-6">

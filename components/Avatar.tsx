@@ -1,5 +1,5 @@
 'use client';
-import { logout, retrievePhoto } from '@/utils/actions';
+import { retrievePhoto } from '@/utils/actions';
 import { useAuth } from './useAuth';
 import { useEffect, useState } from 'react';
 
@@ -35,6 +35,7 @@ function Avatar() {
           if (isMounted) {
             setImageError(true);
           }
+          console.log(error);
         }
       } else {
         if (isMounted) {

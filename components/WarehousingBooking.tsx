@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 function WarehousingBooking() {
   return (
     <div className="card w-full max-w-2xl mx-auto bg-base-100 shadow-xl">
@@ -9,9 +11,9 @@ function WarehousingBooking() {
           <p className="text-lg">
             This is a demo feature showcasing our booking interface. For a
             working example of our booking system, please visit our{' '}
-            <a href="/booking/seafreight" className="link link-primary">
+            <Link href="/booking/seafreight" className="link link-primary">
               Sea Freight Booking
-            </a>{' '}
+            </Link>{' '}
             page.
           </p>
           <p className="text-sm text-neutral-500 mt-4">

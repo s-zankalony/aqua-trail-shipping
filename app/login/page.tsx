@@ -109,7 +109,7 @@ function LoginPage() {
               </button>
             </div>
             <div className="text-center mt-4">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <a href="/register" className="link link-primary">
                 Register here
               </a>
