@@ -9,8 +9,10 @@ import {
   CustomerCreationSchema,
   type CustomerCreationInput,
 } from '@/utils/zodSchemas';
+import { useRouter } from 'next/navigation';
 
 function CreateCustomerPage() {
+  const router = useRouter();
   const [toast, setToast] = useState({
     text: '',
     type: '',
@@ -28,7 +30,7 @@ function CreateCustomerPage() {
   const onSubmit = async (data: CustomerCreationInput) => {
     try {
       // The customerData object matches CustomerData type with optional id
-      await createCustomer({
+      const newCustomer = await createCustomer({
         customerData: {
           ...data,
         },
@@ -38,6 +40,9 @@ function CreateCustomerPage() {
         type: 'success',
         status: 'block',
       });
+      setTimeout(() => {
+        router.push(`/profile/${newCustomer.userId}/customers`);
+      }, 3000);
     } catch (error) {
       setToast({
         text: error instanceof Error ? error.message : 'An error occurred',
