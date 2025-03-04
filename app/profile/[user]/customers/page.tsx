@@ -53,6 +53,7 @@ function UserCustomersPage() {
   // Remove unused userData state and use proper type for customers
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -69,6 +70,8 @@ function UserCustomersPage() {
         setCustomers(userCustomers || []);
       } catch (error) {
         console.error('Error fetching user data:', error);
+      } finally {
+        setIsLoading(false); // Set loading to false when done, whether successful or not
       }
     };
 
@@ -84,65 +87,76 @@ function UserCustomersPage() {
           <h2 className="card-title text-2xl mb-6">My Customers</h2>
 
           <div className="overflow-x-auto">
-            <table className="table table-zebra">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Location</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {customers?.map((customer) => (
-                  <tr key={customer.id}>
-                    <td>
-                      <div className="font-bold">{customer.name}</div>
-                    </td>
-                    <td>
-                      <div className="flex items-center space-x-3">
-                        <div className="font-normal">{customer.email}</div>
-                      </div>
-                    </td>
-                    <td>{customer.phone}</td>
-                    <td>
-                      <div className="flex flex-col">
-                        <span>{customer.city}</span>
-                        <span className="badge badge-ghost badge-sm">
-                          {customer.country}
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <CustomerActions customerId={customer.id} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {isLoading ? (
+              <div className="flex justify-center py-4">
+                <span className="loading loading-spinner loading-lg"></span>
+              </div>
+            ) : (
+              <>
+                {customers.length > 0 ? (
+                  <table className="table table-zebra">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {customers.map((customer) => (
+                        <tr key={customer.id}>
+                          <td>
+                            <div className="font-bold">{customer.name}</div>
+                          </td>
+                          <td>
+                            <div className="flex items-center space-x-3">
+                              <div className="font-normal">
+                                {customer.email}
+                              </div>
+                            </div>
+                          </td>
+                          <td>{customer.phone}</td>
+                          <td>
+                            <div className="flex flex-col">
+                              <span>{customer.city}</span>
+                              <span className="badge badge-ghost badge-sm">
+                                {customer.country}
+                              </span>
+                            </div>
+                          </td>
+                          <td>
+                            <CustomerActions customerId={customer.id} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="alert alert-info">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      className="stroke-current shrink-0 w-6 h-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
+                    </svg>
+                    <span>
+                      No customers found. Add your first customer to get
+                      started!
+                    </span>
+                  </div>
+                )}
+              </>
+            )}
           </div>
-
-          {customers?.length === 0 && (
-            <div className="alert alert-info">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                className="stroke-current shrink-0 w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-              <span>
-                No customers found. Add your first customer to get started!
-              </span>
-            </div>
-          )}
 
           <div className="card-actions justify-end mt-6">
             <AddCustomerButton />
