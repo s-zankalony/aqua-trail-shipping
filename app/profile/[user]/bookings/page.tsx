@@ -79,6 +79,7 @@ function UserBookingsPage() {
 
   const [userData, setUserData] = useState<UserData>(null);
   const [bookings, setBookings] = useState<Booking[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,6 +91,8 @@ function UserBookingsPage() {
         setBookings(bookings as Booking[] | null);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -130,67 +133,75 @@ function UserBookingsPage() {
             </tr>
           </thead>
           <tbody>
-            {bookings?.map((booking) => {
-              return (
-                <tr key={booking.id}>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
-                  <td>{booking.id}</td>
-                  <td>{booking.shipper.name}</td>
-                  <td>{booking.containerQuantity}</td>
-                  <td>{`${
-                    booking.containerSize === 'TWENTY_FT' ? "20'" : "40'"
-                  } ${booking.containerType}`}</td>
-                  <td>{booking.commodity}</td>
-                  <td>{booking.weight}</td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      className={`checkbox ${booking.dg && 'checkbox-error'}`}
-                      checked={booking.dg}
-                      disabled
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      className={`checkbox ${
-                        booking.reefer && 'checkbox-success'
-                      }`}
-                      checked={booking.reefer}
-                      disabled
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      className={`checkbox ${
-                        booking.oog && 'checkbox-warning'
-                      }`}
-                      checked={booking.oog}
-                      disabled
-                    />
-                  </td>
-                  <td>{booking.pol}</td>
-                  <td>{booking.pod}</td>
-                  <td>{booking.etd.toLocaleDateString()}</td>
-                  <td>{booking.createdAt.toLocaleDateString()}</td>
-                  <th>
-                    <button className="btn  btn-xs btn-info">
-                      <a href={`/bookingDetails/${booking.id}`}>details</a>
-                    </button>
-                  </th>
-                  <th>
-                    <button className="btn  btn-xs btn-warning">
-                      <a href={`/bookingDetails/${booking.id}/edit`}>edit</a>
-                    </button>
-                  </th>
-                </tr>
-              );
-            })}
+            {isLoading ? (
+              <tr>
+                <td colSpan={17} className="text-center py-4">
+                  <span className="loading loading-spinner loading-lg"></span>
+                </td>
+              </tr>
+            ) : (
+              bookings?.map((booking) => {
+                return (
+                  <tr key={booking.id}>
+                    <th>
+                      <label>
+                        <input type="checkbox" className="checkbox" />
+                      </label>
+                    </th>
+                    <td>{booking.id}</td>
+                    <td>{booking.shipper.name}</td>
+                    <td>{booking.containerQuantity}</td>
+                    <td>{`${
+                      booking.containerSize === 'TWENTY_FT' ? "20'" : "40'"
+                    } ${booking.containerType}`}</td>
+                    <td>{booking.commodity}</td>
+                    <td>{booking.weight}</td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className={`checkbox ${booking.dg && 'checkbox-error'}`}
+                        checked={booking.dg}
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className={`checkbox ${
+                          booking.reefer && 'checkbox-success'
+                        }`}
+                        checked={booking.reefer}
+                        disabled
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className={`checkbox ${
+                          booking.oog && 'checkbox-warning'
+                        }`}
+                        checked={booking.oog}
+                        disabled
+                      />
+                    </td>
+                    <td>{booking.pol}</td>
+                    <td>{booking.pod}</td>
+                    <td>{booking.etd.toLocaleDateString()}</td>
+                    <td>{booking.createdAt.toLocaleDateString()}</td>
+                    <th>
+                      <button className="btn  btn-xs btn-info">
+                        <a href={`/bookingDetails/${booking.id}`}>details</a>
+                      </button>
+                    </th>
+                    <th>
+                      <button className="btn  btn-xs btn-warning">
+                        <a href={`/bookingDetails/${booking.id}/edit`}>edit</a>
+                      </button>
+                    </th>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
           {/* foot */}
           <tfoot>
