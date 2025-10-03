@@ -21,13 +21,15 @@ import { createClient } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
 
 // Get environment variables with validation
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_PUBLIC;
+const supabaseUrl =
+  process.env.SUPABASE_URL ?? process.env['NEXT_PUBLIC_SUPABASE_URL'];
+const supabaseAnonKey =
+  process.env.SUPABASE_ANON_KEY ?? process.env['NEXT_PUBLIC_SUPABASE_ANON_PUBLIC'];
 
 // Validate required environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error(
-    'Missing required environment variables NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_PUBLIC'
+    'Missing required environment variables SUPABASE_URL or SUPABASE_ANON_KEY'
   );
 }
 
