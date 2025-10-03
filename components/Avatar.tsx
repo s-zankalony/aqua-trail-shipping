@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { retrievePhoto } from '@/utils/actions';
 import { useAuth } from './useAuth';
 import { useEffect, useState } from 'react';
@@ -63,6 +64,17 @@ function Avatar() {
 
   const fallbackImage = '/images/aqua-trail-shipping.jpg';
 
+  const handleImageError = () => {
+    console.error("Image load error:", {
+      attemptedSrc: avatarUrl,
+      timestamp: new Date().toISOString(),
+      userName: user?.name,
+      userEmail: user?.email,
+      storedImagePath: user?.image,
+    });
+    setImageError(true);
+  };
+
   return (
     <div className="dropdown dropdown-end">
       <div
@@ -70,24 +82,16 @@ function Avatar() {
         role="button"
         className="btn btn-ghost btn-circle avatar"
       >
-        <div className="w-10 rounded-full">
-          <img
-            alt={user ? `${user.name}'s avatar` : 'Default avatar'}
+        <div className="w-10 rounded-full overflow-hidden">
+          <Image
+            alt={user ? `${user.name}'s avatar` : "Default avatar"}
             src={!imageError && avatarUrl ? avatarUrl : fallbackImage}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              console.error('Image load error:', {
-                attemptedSrc: target.src,
-                timestamp: new Date().toISOString(),
-                userName: user?.name,
-                userEmail: user?.email,
-                storedImagePath: user?.image,
-                error: e.type,
-              });
-              setImageError(true);
-              target.src = fallbackImage;
-            }}
-            className="object-cover"
+            width={40}
+            height={40}
+            className="h-10 w-10 rounded-full object-cover"
+            onError={handleImageError}
+            unoptimized={Boolean(avatarUrl)}
+            sizes="2.5rem"
           />
         </div>
       </div>

@@ -1,12 +1,18 @@
+import Image from 'next/image';
+
 function AboutPage() {
   return (
     <div>
       <div className="flex flex-col md:flex-row gap-4 bg-base-100 p-8">
         <figure>
-          <img
-            src="images/vessel-under-operation.jpeg"
-            className="h-300 w-600"
+          <Image
+            src="/images/vessel-under-operation.jpeg"
+            className="h-300 w-600 object-cover"
             alt="Album"
+            width={1312}
+            height={736}
+            priority
+            sizes="(min-width: 768px) 600px, 100vw"
           />
         </figure>
         <div className="card-body">
@@ -30,16 +36,30 @@ function AboutPage() {
             mollitia, tempore cumque? Illum dignissimos sapiente aspernatur
             animi perferendis repudiandae nihil quibusdam ipsa, debitis hic
             aliquid corporis repellendus nostrum eum ad voluptate fuga tempore
-            reprehenderit.{' '}
+            reprehenderit.{" "}
           </p>
         </div>
         <figure>
-          <img src="images/port-arial-view.jpg" alt="Album" />
+          <Image
+            src="/images/port-arial-view.jpg"
+            alt="Album"
+            width={3992}
+            height={2242}
+            className="h-auto w-full object-cover"
+            sizes="(min-width: 768px) 50vw, 100vw"
+          />
         </figure>
       </div>
       <div className="flex flex-col md:flex-row gap-4 bg-base-100 p-8">
         <figure>
-          <img src="images/port-at-sunset.jpg" alt="Album" />
+          <Image
+            src="/images/port-at-sunset.jpg"
+            alt="Album"
+            width={5184}
+            height={3456}
+            className="h-auto w-full object-cover"
+            sizes="(min-width: 768px) 50vw, 100vw"
+          />
         </figure>
         <div className="card-body">
           <h2 className="card-title">What We are Committed to</h2>

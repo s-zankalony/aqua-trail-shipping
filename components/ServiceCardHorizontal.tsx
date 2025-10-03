@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { ServiceCardType } from '@/types';
 import LinkButton from './LinkButton';
 
@@ -10,8 +11,15 @@ function ServiceCardHorizontal({ service }: { service: ServiceCardType }) {
   `;
   return (
     <div className="card lg:card-side bg-base-100 shadow-xl my-4" id={id}>
-      <figure>
-        <img src={img} alt={title} />
+      <figure className="max-w-xl overflow-hidden rounded-lg">
+        <Image
+          src={`/${img}`}
+          alt={title}
+          width={1024}
+          height={768}
+          className="h-full w-full object-cover"
+          sizes="(min-width: 1024px) 512px, 100vw"
+        />
       </figure>
       <div className="card-body">
         <h2 className="card-title">{title}</h2>

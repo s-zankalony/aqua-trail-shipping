@@ -6,10 +6,7 @@ A modern shipping management platform built with Next.js, designed to streamline
 
 - Shipment bookings
 - Customer registration
-- Documentation handling
-- Route optimization
-- Reporting and analytics
-- User role management
+- User role management (TBA)
 
 ## Technology Stack
 

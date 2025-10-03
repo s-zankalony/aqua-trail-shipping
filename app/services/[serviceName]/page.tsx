@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { services } from '@/utils/services';
 import { notFound, useParams } from 'next/navigation';
 import LinkButton from '@/components/LinkButton';
@@ -18,12 +19,14 @@ function ServicePage() {
 
   return (
     <div className="flex flex-col gap-4 bg-base-100 p-8 m-16 items-center">
-      <figure>
-        <img
-          width={500}
-          height={300}
+      <figure className="max-w-2xl overflow-hidden rounded-lg">
+        <Image
+          width={1024}
+          height={768}
           src={`/${service.img}`}
           alt={service.title}
+          className="h-full w-full object-cover"
+          sizes="(min-width: 768px) 640px, 100vw"
         />
       </figure>
       <div className="card-body">
