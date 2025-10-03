@@ -77,3 +77,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 For support and queries, please open an issue in the GitHub repository or contact the maintenance team.
+
+## Daily Random Booking Script
+
+- Run `npm run fetch:random-booking` to log a random booking id using the existing database connection.
+- Each run appends to `logs/daily-random-booking.log`, creating the directory automatically.
+- Schedule it with your server's task manager (e.g. Windows Task Scheduler) to execute the same command once per day.
+- The command exits non-zero and logs the error message if the database is unreachable or no bookings exist.

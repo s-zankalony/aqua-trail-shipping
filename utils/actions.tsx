@@ -270,6 +270,32 @@ export const updateSeafreightBooking = async ({
   }
 };
 
+export const getRandomBookingId = async () => {
+  try {
+    const totalBookings = await prisma.seaFreightBooking.count();
+    if (totalBookings === 0) {
+      return null;
+    }
+
+    const randomOffset = Math.floor(Math.random() * totalBookings);
+    const [randomBooking] = await prisma.seaFreightBooking.findMany({
+      select: {
+        id: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+      skip: randomOffset,
+      take: 1,
+    });
+
+    return randomBooking?.id ?? null;
+  } catch (error) {
+    console.error('Failed to fetch random booking id:', error);
+    throw new Error('Unable to retrieve random booking at this time');
+  }
+};
+
 const BUCKET_NAME = 'user-images';
 const UPLOAD_FOLDER = '144gyii_1';
 
